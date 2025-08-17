@@ -127,9 +127,10 @@ export default function PlanPage() {
   ]
 
   return (
-    <div className="p-4 space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-white bg-gray-800 p-4 rounded-lg">Plan Budget</h1>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+      <div className="container-modern py-6 space-y-8">
+        <div className="flex items-center justify-between">
+          <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Plan Budget</h1>
         {state.incomes.length === 0 && state.categories.length === 0 && (
           <Button 
             variant="secondary" 
@@ -421,6 +422,7 @@ export default function PlanPage() {
         onAddIncome={() => setIsIncomeModalOpen(true)}
         onAddCategory={() => setIsCategoryModalOpen(true)}
       />
+      </div>
     </div>
   )
 }

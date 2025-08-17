@@ -112,138 +112,163 @@ export default function HomePage() {
   }
 
   return (
-    <div className="p-4 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between bg-gray-800 p-4 rounded-lg">
-        <div>
-          <div className="flex items-center space-x-2">
-            <h1 className="text-2xl font-bold text-white">BudgetBoss</h1>
-            <span className="px-2 py-1 text-xs font-medium bg-green-500 text-white rounded-full">
-              {user ? 'Online' : 'Offline'}
-            </span>
-          </div>
-          <p 
-            className={`text-gray-300 ${!user ? 'cursor-pointer hover:text-white' : ''}`}
-            onClick={!user ? () => window.location.reload() : undefined}
-          >
-            {user ? `Welcome back!` : 'Refresh'}
-          </p>
-        </div>
-        
-        <div className="flex items-center space-x-2">
-          {user && (
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={handleSync}
-              disabled={isSyncing}
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+      <div className="container-modern py-6 space-y-8">
+        {/* Modern Header */}
+        <div className="flex items-center justify-between bg-gradient-to-r from-indigo-600 to-purple-600 p-6 rounded-2xl shadow-lg">
+          <div>
+            <div className="flex items-center space-x-3">
+              <h1 className="text-3xl font-bold text-white tracking-tight">BudgetBoss</h1>
+              <span className={`px-3 py-1 text-xs font-semibold rounded-full ${
+                user 
+                  ? 'bg-green-400/20 text-green-100 border border-green-400/30' 
+                  : 'bg-orange-400/20 text-orange-100 border border-orange-400/30'
+              }`}>
+                {user ? 'Online' : 'Offline'}
+              </span>
+            </div>
+            <p 
+              className={`text-indigo-100 mt-1 ${!user ? 'cursor-pointer hover:text-white transition-colors' : ''}`}
+              onClick={!user ? () => window.location.reload() : undefined}
             >
-              {isSyncing ? '🔄' : '☁️'} {isSyncing ? 'Syncing...' : 'Sync'}
-            </Button>
-          )}
-          {!user && (
-            <Button
-              size="sm"
-              onClick={() => router.push('/auth')}
-            >
-              Sign In
-            </Button>
-          )}
-        </div>
-      </div>
-
-      {/* Month Switcher */}
-      <MonthSwitcher />
-
-      {/* Budget Overview */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Budget Overview</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {/* Income vs Budget vs Spent */}
-          <div className="grid grid-cols-3 gap-3">
-            <div className="text-center">
-              <p className="text-xs text-gray-600">Income</p>
-              <p className="text-lg font-semibold text-green-600">
-                {formatCurrency(totalIncome)}
-              </p>
-            </div>
-            <div className="text-center">
-              <p className="text-xs text-gray-600">Budgeted</p>
-              <p className="text-lg font-semibold text-blue-600">
-                {formatCurrency(totalBudgeted)}
-              </p>
-            </div>
-            <div className="text-center">
-              <p className="text-xs text-gray-600">Spent</p>
-              <p className="text-lg font-semibold text-gray-900">
-                {formatCurrency(totalSpent)}
-              </p>
-            </div>
+              {user ? `Welcome back!` : 'Tap to refresh'}
+            </p>
           </div>
           
-          {/* Key Metrics */}
-          <div className="border-t pt-3 space-y-3">
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">💰 Budget Remaining</span>
-              <span className={`font-bold text-lg ${budgetRemaining >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                {formatCurrency(budgetRemaining)}
-              </span>
-            </div>
-            
-            {totalOverspent > 0 && (
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-red-600">🚨 Total Overspent</span>
-                <span className="font-semibold text-red-600">
-                  {formatCurrency(totalOverspent)}
-                </span>
-              </div>
+          <div className="flex items-center space-x-3">
+            {user && (
+              <Button
+                size="sm"
+                variant="soft"
+                onClick={handleSync}
+                disabled={isSyncing}
+                loading={isSyncing}
+                icon={!isSyncing && <span>☁️</span>}
+                className="bg-white/10 text-white border-white/20 hover:bg-white/20"
+              >
+                {isSyncing ? 'Syncing...' : 'Sync'}
+              </Button>
             )}
-            
-            {totalUnplannedSpent > 0 && (
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-orange-600">⚡ Unplanned Expenses</span>
-                <span className="font-semibold text-orange-600">
-                  {formatCurrency(totalUnplannedSpent)}
-                </span>
-              </div>
+            {!user && (
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={() => router.push('/auth')}
+                className="bg-white text-indigo-600 hover:bg-gray-50"
+              >
+                Sign In
+              </Button>
             )}
-            
-            <div className="flex justify-between items-center text-xs text-gray-500 border-t pt-2">
-              <span>Budget Allocation Left</span>
-              <span className={actualLeft >= 0 ? 'text-green-600' : 'text-red-600'}>
-                {formatCurrency(actualLeft)}
-              </span>
-            </div>
           </div>
+        </div>
+
+        {/* Month Switcher */}
+        <MonthSwitcher />
+
+        {/* Budget Overview */}
+        <Card variant="elevated" className="bg-gradient-to-br from-white to-gray-50">
+          <CardHeader className="border-b-0 pb-3">
+            <CardTitle size="lg" className="text-gray-800">Budget Overview</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6 pt-2">
+            {/* Income vs Budget vs Spent */}
+            <div className="grid grid-cols-3 gap-4">
+              <div className="text-center p-4 bg-green-50 rounded-xl border border-green-100">
+                <p className="text-xs font-medium text-green-700 uppercase tracking-wide">Income</p>
+                <p className="text-xl font-bold text-green-600 mt-1">
+                  {formatCurrency(totalIncome)}
+                </p>
+              </div>
+              <div className="text-center p-4 bg-blue-50 rounded-xl border border-blue-100">
+                <p className="text-xs font-medium text-blue-700 uppercase tracking-wide">Budgeted</p>
+                <p className="text-xl font-bold text-blue-600 mt-1">
+                  {formatCurrency(totalBudgeted)}
+                </p>
+              </div>
+              <div className="text-center p-4 bg-gray-50 rounded-xl border border-gray-200">
+                <p className="text-xs font-medium text-gray-700 uppercase tracking-wide">Spent</p>
+                <p className="text-xl font-bold text-gray-800 mt-1">
+                  {formatCurrency(totalSpent)}
+                </p>
+              </div>
+            </div>
+          
+            {/* Key Metrics */}
+            <div className="border-t border-gray-100 pt-6 space-y-4">
+              <div className="flex justify-between items-center p-4 bg-white rounded-xl border border-gray-100">
+                <div className="flex items-center space-x-2">
+                  <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                    <span className="text-sm">💰</span>
+                  </div>
+                  <span className="text-sm font-medium text-gray-700">Budget Remaining</span>
+                </div>
+                <span className={`font-bold text-lg ${budgetRemaining >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  {formatCurrency(budgetRemaining)}
+                </span>
+              </div>
+              
+              {totalOverspent > 0 && (
+                <div className="flex justify-between items-center p-4 bg-red-50 rounded-xl border border-red-100">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+                      <span className="text-sm">🚨</span>
+                    </div>
+                    <span className="text-sm font-medium text-red-700">Total Overspent</span>
+                  </div>
+                  <span className="font-bold text-lg text-red-600">
+                    {formatCurrency(totalOverspent)}
+                  </span>
+                </div>
+              )}
+              
+              {totalUnplannedSpent > 0 && (
+                <div className="flex justify-between items-center p-4 bg-orange-50 rounded-xl border border-orange-100">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
+                      <span className="text-sm">⚡</span>
+                    </div>
+                    <span className="text-sm font-medium text-orange-700">Unplanned Expenses</span>
+                  </div>
+                  <span className="font-bold text-lg text-orange-600">
+                    {formatCurrency(totalUnplannedSpent)}
+                  </span>
+                </div>
+              )}
+              
+              <div className="flex justify-between items-center text-sm text-gray-600 border-t border-gray-100 pt-4">
+                <span className="font-medium">Budget Allocation Left</span>
+                <span className={`font-semibold ${actualLeft >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  {formatCurrency(actualLeft)}
+                </span>
+              </div>
+            </div>
         </CardContent>
       </Card>
 
-      {/* Borrowed/Lent Summary */}
-      {(borrowedLent.borrowed > 0 || borrowedLent.lent > 0) && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Category Borrowing</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <p className="text-sm text-gray-600">Total Borrowed</p>
-                <p className="text-lg font-semibold text-blue-600">
-                  {formatCurrency(borrowedLent.borrowed)}
-                </p>
+        {/* Borrowed/Lent Summary */}
+        {(borrowedLent.borrowed > 0 || borrowedLent.lent > 0) && (
+          <Card variant="elevated">
+            <CardHeader>
+              <CardTitle>Category Borrowing</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="text-center p-4 bg-blue-50 rounded-xl border border-blue-100">
+                  <p className="text-xs font-medium text-blue-700 uppercase tracking-wide">Total Borrowed</p>
+                  <p className="text-xl font-bold text-blue-600 mt-1">
+                    {formatCurrency(borrowedLent.borrowed)}
+                  </p>
+                </div>
+                <div className="text-center p-4 bg-green-50 rounded-xl border border-green-100">
+                  <p className="text-xs font-medium text-green-700 uppercase tracking-wide">Total Lent</p>
+                  <p className="text-xl font-bold text-green-600 mt-1">
+                    {formatCurrency(borrowedLent.lent)}
+                  </p>
+                </div>
               </div>
-              <div>
-                <p className="text-sm text-gray-600">Total Lent</p>
-                <p className="text-lg font-semibold text-green-600">
-                  {formatCurrency(borrowedLent.lent)}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+            </CardContent>
+          </Card>
+        )}
 
       {/* Attention Needed - Only Overspent Categories */}
       {overspentCategories.length > 0 && (
@@ -310,31 +335,39 @@ export default function HomePage() {
         </Card>
       )}
 
-      {/* Setup Prompts */}
-      {!state.budget && (
-        <Card>
-          <CardContent className="text-center py-8">
-            <h3 className="text-lg font-semibold mb-2">Welcome to BudgetBoss!</h3>
-            <p className="text-gray-600 mb-4">
-              Let&apos;s set up your first budget to get started.
-            </p>
-            <Button onClick={() => router.push('/plan')}>
-              🚀 Set Up Budget
-            </Button>
-          </CardContent>
-        </Card>
-      )}
+        {/* Setup Prompts */}
+        {!state.budget && (
+          <Card variant="elevated" className="bg-gradient-to-br from-indigo-50 to-purple-50 border-indigo-200">
+            <CardContent className="text-center py-12">
+              <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl">🚀</span>
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Welcome to BudgetBoss!</h3>
+              <p className="text-gray-600 mb-6 max-w-md mx-auto">
+                Let&apos;s set up your first budget to get started on your financial journey.
+              </p>
+              <Button 
+                onClick={() => router.push('/plan')}
+                size="lg"
+                icon={<span>🚀</span>}
+              >
+                Set Up Budget
+              </Button>
+            </CardContent>
+          </Card>
+        )}
 
-      {/* Expandable Floating Button */}
-      <ExpandableFloatingButton
-        onAddExpense={() => setIsQuickAddOpen(true)}
-        onBorrow={() => setIsBorrowModalOpen(true)}
-        borrowDisabled={state.categories.length < 2}
-      />
+        {/* Expandable Floating Button */}
+        <ExpandableFloatingButton
+          onAddExpense={() => setIsQuickAddOpen(true)}
+          onBorrow={() => setIsBorrowModalOpen(true)}
+          borrowDisabled={state.categories.length < 2}
+        />
 
-      {/* Modals */}
-      <QuickAdd isOpen={isQuickAddOpen} onClose={() => setIsQuickAddOpen(false)} />
-      <BorrowModal isOpen={isBorrowModalOpen} onClose={() => setIsBorrowModalOpen(false)} />
+        {/* Modals */}
+        <QuickAdd isOpen={isQuickAddOpen} onClose={() => setIsQuickAddOpen(false)} />
+        <BorrowModal isOpen={isBorrowModalOpen} onClose={() => setIsBorrowModalOpen(false)} />
+      </div>
     </div>
   )
 }
