@@ -280,8 +280,8 @@ export default function HomePage() {
                     <div>
                       <p className="font-medium text-gray-900">{transaction.description}</p>
                       <p className="text-sm text-gray-600">
-                        {category?.name || 'No Category'} • {transaction.account}
-                        {transaction.is_emergency && <span className="text-red-600"> • Emergency</span>}
+                        {transaction.is_unplanned ? 'Unplanned Expense' : (category?.name || 'No Category')} • {transaction.account}
+                        {transaction.is_unplanned && <span className="text-orange-600"> • Unplanned</span>}
                       </p>
                     </div>
                     <span className="font-semibold text-gray-900">

@@ -10,7 +10,7 @@ import { ConfirmModal } from '@/components/ConfirmModal'
 import { CopyPreviousModal } from '@/components/CopyPreviousModal'
 import { CategoryDetailModal } from '@/components/CategoryDetailModal'
 import { store } from '@/lib/store'
-import { formatCurrency, getPreviousMonth } from '@/lib/month'
+import { formatCurrency } from '@/lib/month'
 import type { BudgetState } from '@/lib/models'
 
 export default function PlanPage() {

@@ -1,10 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Button } from './Button'
 import { Modal } from './Modal'
 import { db } from '@/lib/db'
-import { getPreviousMonth } from '@/lib/month'
 
 interface CopyPreviousModalProps {
   isOpen: boolean
@@ -34,13 +33,7 @@ export function CopyPreviousModal({ isOpen, onClose, onCopy, currentMonth }: Cop
   const [availableMonths, setAvailableMonths] = useState<PreviousMonthData[]>([])
   const [isLoading, setIsLoading] = useState(false)
 
-  useEffect(() => {
-    if (isOpen) {
-      loadAvailableMonths()
-    }
-  }, [isOpen, currentMonth])
-
-  const loadAvailableMonths = async () => {
+  const loadAvailableMonths = useCallback(async () => {
     setIsLoading(true)
     try {
       const allMonths = await db.getAllStoredMonths()
@@ -72,7 +65,13 @@ export function CopyPreviousModal({ isOpen, onClose, onCopy, currentMonth }: Cop
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [currentMonth])
+
+  useEffect(() => {
+    if (isOpen) {
+      loadAvailableMonths()
+    }
+  }, [isOpen, loadAvailableMonths])
 
   const formatMonthDisplay = (month: string) => {
     const [year, monthNum] = month.split('-')
