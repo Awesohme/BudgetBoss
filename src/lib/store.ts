@@ -386,6 +386,28 @@ export class BudgetStore {
     return this.getCategoriesWithSpent().filter(category => category.remaining > 0)
   }
 
+  getTotalSpent(): number {
+    return this.state.transactions.reduce((sum, tx) => sum + tx.amount, 0)
+  }
+
+  getTotalOverspent(): number {
+    return this.getCategoriesWithSpent()
+      .filter(category => category.health === 'overspent')
+      .reduce((sum, category) => sum + Math.abs(category.remaining), 0)
+  }
+
+  getTotalUnplannedSpent(): number {
+    return this.state.transactions
+      .filter(tx => tx.is_unplanned)
+      .reduce((sum, tx) => sum + tx.amount, 0)
+  }
+
+  getBudgetRemaining(): number {
+    const totalIncome = this.getTotalIncome()
+    const totalSpent = this.getTotalSpent()
+    return totalIncome - totalSpent
+  }
+
   // Sync operations
   async syncWithRemote(userId: string): Promise<void> {
     await syncService.fullSync(this.currentMonth, userId)
