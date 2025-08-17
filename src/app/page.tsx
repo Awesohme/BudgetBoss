@@ -122,22 +122,15 @@ export default function HomePage() {
               {user ? 'Online' : 'Offline'}
             </span>
           </div>
-          <p className="text-gray-300">
+          <p 
+            className={`text-gray-300 ${!user ? 'cursor-pointer hover:text-white' : ''}`}
+            onClick={!user ? () => window.location.reload() : undefined}
+          >
             {user ? `Welcome back!` : 'Refresh'}
           </p>
         </div>
         
         <div className="flex items-center space-x-2">
-          {/* Temporary manual refresh button */}
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => window.location.reload()}
-            className="text-white hover:bg-gray-700"
-          >
-            🔄 Refresh
-          </Button>
-          
           {user && (
             <Button
               size="sm"
