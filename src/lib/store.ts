@@ -327,7 +327,10 @@ export class BudgetStore {
       const remaining = available - spent
       
       let health: CategoryHealth = 'healthy'
-      if (spent > available) {
+      if (available === 0) {
+        // No budget allocated, so it's healthy regardless of spending
+        health = 'healthy'
+      } else if (spent > available) {
         health = 'overspent'
       } else if (spent > available * 0.8) {
         health = 'warning'
