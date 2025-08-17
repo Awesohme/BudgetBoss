@@ -322,7 +322,7 @@ export default function HomePage() {
           <CardContent className="text-center py-8">
             <h3 className="text-lg font-semibold mb-2">Welcome to BudgetBoss!</h3>
             <p className="text-gray-600 mb-4">
-              Let's set up your first budget to get started.
+              Let&apos;s set up your first budget to get started.
             </p>
             <Button onClick={() => router.push('/plan')}>
               🚀 Set Up Budget

@@ -64,7 +64,7 @@ export function QuickAdd({ isOpen, onClose }: QuickAddProps) {
     try {
       await store.addTransaction(formData)
       onClose()
-    } catch (err) {
+    } catch {
       setError('Failed to add transaction')
     } finally {
       setIsSubmitting(false)

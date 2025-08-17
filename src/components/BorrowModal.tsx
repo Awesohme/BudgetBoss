@@ -74,7 +74,7 @@ export function BorrowModal({ isOpen, onClose }: BorrowModalProps) {
         month: store.getCurrentMonth()
       })
       onClose()
-    } catch (err) {
+    } catch {
       setError('Failed to process borrowing')
     } finally {
       setIsSubmitting(false)

@@ -30,8 +30,8 @@ export default function AuthPage() {
       if (error) throw error
 
       setMessage('Check your email for a magic link to sign in!')
-    } catch (err: any) {
-      setError(err.message || 'An error occurred')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {
       setIsLoading(false)
     }
@@ -83,7 +83,7 @@ export default function AuthPage() {
 
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
-              No password needed! We'll send you a secure link to sign in.
+              No password needed! We&apos;ll send you a secure link to sign in.
             </p>
           </div>
 

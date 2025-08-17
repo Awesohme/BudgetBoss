@@ -2,7 +2,7 @@
 
 import { supabase } from './supabase'
 import { db } from './db'
-import type { Budget, Income, FixedExpense, Category, Transaction, Settings } from './models'
+import type { Budget } from './models'
 
 export class SyncService {
   
@@ -85,15 +85,15 @@ export class SyncService {
 
     // Push incomes, fixed expenses, and categories
     for (const income of incomes) {
-      await this.pushItem('incomes', income)
+      await this.pushItem('incomes', income as unknown as { id: string; updated_at: string; [key: string]: unknown })
     }
     
     for (const expense of fixedExpenses) {
-      await this.pushItem('fixed_expenses', expense)
+      await this.pushItem('fixed_expenses', expense as unknown as { id: string; updated_at: string; [key: string]: unknown })
     }
     
     for (const category of categories) {
-      await this.pushItem('categories', category)
+      await this.pushItem('categories', category as unknown as { id: string; updated_at: string; [key: string]: unknown })
     }
   }
 
@@ -101,11 +101,11 @@ export class SyncService {
     const transactions = await db.getTransactionsForMonth(month)
     
     for (const transaction of transactions) {
-      await this.pushItem('transactions', transaction)
+      await this.pushItem('transactions', transaction as unknown as { id: string; updated_at: string; [key: string]: unknown })
     }
   }
 
-  private async pushItem(table: string, item: any): Promise<void> {
+  private async pushItem(table: string, item: { id: string; updated_at: string; [key: string]: unknown }): Promise<void> {
     const { data: remoteItem } = await supabase
       .from(table)
       .select('updated_at')

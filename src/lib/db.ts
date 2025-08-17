@@ -63,7 +63,8 @@ export const db = {
 
   async getTransaction(id: string): Promise<Transaction | null> {
     try {
-      return await get(TX_KEY(id))
+      const result = await get(TX_KEY(id))
+      return result || null
     } catch {
       return null
     }
@@ -108,7 +109,8 @@ export const db = {
 
   async getSettings(): Promise<Settings | null> {
     try {
-      return await get(SETTINGS_KEY)
+      const result = await get(SETTINGS_KEY)
+      return result || null
     } catch {
       return null
     }
@@ -145,7 +147,7 @@ export const db = {
   // Utility functions
   async getAllStoredMonths(): Promise<string[]> {
     const allKeys = await keys()
-    const planKeys = allKeys.filter(key => typeof key === 'string' && key.startsWith('plan:'))
+    const planKeys = allKeys.filter(key => typeof key === 'string' && key.startsWith('plan:')) as string[]
     return planKeys.map(key => key.replace('plan:', ''))
   },
 
