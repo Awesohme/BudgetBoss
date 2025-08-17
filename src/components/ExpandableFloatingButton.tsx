@@ -3,12 +3,22 @@
 import { useState } from 'react'
 
 interface ExpandableFloatingButtonProps {
-  onAddExpense: () => void
-  onBorrow: () => void
+  onAddExpense?: () => void
+  onBorrow?: () => void
+  onAddIncome?: () => void
+  onAddCategory?: () => void
   borrowDisabled?: boolean
+  variant?: 'home' | 'plan'
 }
 
-export function ExpandableFloatingButton({ onAddExpense, onBorrow, borrowDisabled = false }: ExpandableFloatingButtonProps) {
+export function ExpandableFloatingButton({ 
+  onAddExpense, 
+  onBorrow, 
+  onAddIncome, 
+  onAddCategory, 
+  borrowDisabled = false, 
+  variant = 'home' 
+}: ExpandableFloatingButtonProps) {
   const [isExpanded, setIsExpanded] = useState(false)
 
   const toggleExpanded = () => {
@@ -20,26 +30,54 @@ export function ExpandableFloatingButton({ onAddExpense, onBorrow, borrowDisable
       {/* Secondary action buttons - show when expanded */}
       {isExpanded && (
         <div className="flex flex-col space-y-3 mb-3">
-          <button
-            onClick={() => {
-              onBorrow()
-              setIsExpanded(false)
-            }}
-            disabled={borrowDisabled}
-            className="w-14 h-14 bg-gray-600 text-white rounded-full shadow-lg hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transform transition-all duration-200 hover:scale-105"
-          >
-            <span className="text-xl">🔄</span>
-          </button>
+          {variant === 'home' && (
+            <>
+              <button
+                onClick={() => {
+                  onBorrow?.()
+                  setIsExpanded(false)
+                }}
+                disabled={borrowDisabled}
+                className="w-14 h-14 bg-gray-600 text-white rounded-full shadow-lg hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transform transition-all duration-200 hover:scale-105"
+              >
+                <span className="text-xl">🔄</span>
+              </button>
+              
+              <button
+                onClick={() => {
+                  onAddExpense?.()
+                  setIsExpanded(false)
+                }}
+                className="w-14 h-14 bg-green-600 text-white rounded-full shadow-lg hover:bg-green-700 flex items-center justify-center transform transition-all duration-200 hover:scale-105"
+              >
+                <span className="text-xl">💰</span>
+              </button>
+            </>
+          )}
           
-          <button
-            onClick={() => {
-              onAddExpense()
-              setIsExpanded(false)
-            }}
-            className="w-14 h-14 bg-green-600 text-white rounded-full shadow-lg hover:bg-green-700 flex items-center justify-center transform transition-all duration-200 hover:scale-105"
-          >
-            <span className="text-xl">💰</span>
-          </button>
+          {variant === 'plan' && (
+            <>
+              <button
+                onClick={() => {
+                  onAddCategory?.()
+                  setIsExpanded(false)
+                }}
+                className="w-14 h-14 bg-purple-600 text-white rounded-full shadow-lg hover:bg-purple-700 flex items-center justify-center transform transition-all duration-200 hover:scale-105"
+              >
+                <span className="text-xl">📝</span>
+              </button>
+              
+              <button
+                onClick={() => {
+                  onAddIncome?.()
+                  setIsExpanded(false)
+                }}
+                className="w-14 h-14 bg-green-600 text-white rounded-full shadow-lg hover:bg-green-700 flex items-center justify-center transform transition-all duration-200 hover:scale-105"
+              >
+                <span className="text-xl">💵</span>
+              </button>
+            </>
+          )}
         </div>
       )}
 

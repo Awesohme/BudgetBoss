@@ -20,6 +20,8 @@ export default function HistoryPage() {
     dateFrom: '',
     dateTo: ''
   })
+  const [showFilters, setShowFilters] = useState(false)
+  const [activeFilterType, setActiveFilterType] = useState<'date' | 'category' | null>(null)
   const [confirmModal, setConfirmModal] = useState<{
     isOpen: boolean
     title: string
@@ -138,64 +140,158 @@ export default function HistoryPage() {
       
       <MonthSwitcher />
 
-      {/* Filters */}
-      <Card>
-        <CardContent className="p-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
-              <select
-                value={filters.category}
-                onChange={(e) => setFilters(prev => ({ ...prev, category: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 bg-white"
-              >
-                <option value="">All Categories</option>
-                <option value="unplanned">Unplanned Expenses</option>
-                <option value="uncategorized">Uncategorized</option>
-                {state.categories.map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">From Date</label>
-              <input
-                type="date"
-                value={filters.dateFrom}
-                onChange={(e) => setFilters(prev => ({ ...prev, dateFrom: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">To Date</label>
-              <input
-                type="date"
-                value={filters.dateTo}
-                onChange={(e) => setFilters(prev => ({ ...prev, dateTo: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
-              />
-            </div>
+      {/* Modern Filter Controls */}
+      <div className="flex items-center justify-between p-4 bg-white rounded-lg shadow-sm border border-gray-200">
+        <div className="flex items-center space-x-4">
+          <button 
+            className="flex items-center space-x-2 px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
+            onClick={() => {/* TODO: Implement search */}}
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <span className="text-sm">Search</span>
+          </button>
+          
+          <div className="relative">
+            <button 
+              className="flex items-center space-x-2 px-3 py-2 text-purple-600 hover:text-purple-700 hover:bg-purple-50 rounded-lg transition-colors"
+              onClick={() => setShowFilters(!showFilters)}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707v4.172a1 1 0 01-.293.707l-2 2A1 1 0 0110 22v-6.172a1 1 0 00-.293-.707L3.293 8.707A1 1 0 013 8V4z" />
+              </svg>
+              <span className="text-sm">Filter</span>
+            </button>
           </div>
           
-          {(filters.category || filters.dateFrom || filters.dateTo) && (
-            <div className="mt-3 flex items-center justify-between">
-              <span className="text-sm text-gray-600">
-                Showing {filteredTransactions.length} of {state.transactions.length} transactions
-              </span>
-              <button
-                onClick={() => setFilters({ category: '', dateFrom: '', dateTo: '' })}
-                className="text-sm text-blue-600 hover:text-blue-800"
+          <button 
+            className="flex items-center space-x-2 px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
+            onClick={() => {/* TODO: Implement sort */}}
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+            </svg>
+            <span className="text-sm">Sort</span>
+          </button>
+        </div>
+        
+        {(filters.category || filters.dateFrom || filters.dateTo) && (
+          <button
+            onClick={() => setFilters({ category: '', dateFrom: '', dateTo: '' })}
+            className="text-sm text-red-600 hover:text-red-800"
+          >
+            Clear All
+          </button>
+        )}
+      </div>
+
+      {/* Expandable Filter Panel */}
+      {showFilters && (
+        <Card>
+          <CardContent className="p-4">
+            <h3 className="text-sm font-medium text-gray-900 mb-4">Add Filter</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div 
+                className="p-4 border border-gray-200 rounded-lg hover:bg-purple-50 hover:border-purple-300 cursor-pointer transition-colors group"
+                onClick={() => setActiveFilterType('date')}
               >
-                Clear Filters
-              </button>
+                <div className="flex flex-col items-center text-center">
+                  <div className="w-8 h-8 bg-purple-100 group-hover:bg-purple-200 rounded-lg flex items-center justify-center mb-2">
+                    <svg className="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <span className="text-xs text-gray-700 group-hover:text-purple-700">Date</span>
+                </div>
+              </div>
+              
+              <div 
+                className="p-4 border border-gray-200 rounded-lg hover:bg-purple-50 hover:border-purple-300 cursor-pointer transition-colors group"
+                onClick={() => setActiveFilterType('category')}
+              >
+                <div className="flex flex-col items-center text-center">
+                  <div className="w-8 h-8 bg-purple-100 group-hover:bg-purple-200 rounded-lg flex items-center justify-center mb-2">
+                    <svg className="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                    </svg>
+                  </div>
+                  <span className="text-xs text-gray-700 group-hover:text-purple-700">Tag</span>
+                </div>
+              </div>
+              
+              <div className="p-4 border border-gray-200 rounded-lg opacity-50 cursor-not-allowed">
+                <div className="flex flex-col items-center text-center">
+                  <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center mb-2">
+                    <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                  </div>
+                  <span className="text-xs text-gray-400">Status</span>
+                </div>
+              </div>
+              
+              <div className="p-4 border border-gray-200 rounded-lg opacity-50 cursor-not-allowed">
+                <div className="flex flex-col items-center text-center">
+                  <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center mb-2">
+                    <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                    </svg>
+                  </div>
+                  <span className="text-xs text-gray-400">Amount</span>
+                </div>
+              </div>
             </div>
-          )}
-        </CardContent>
-      </Card>
+            
+            {/* Filter Input Areas */}
+            {activeFilterType === 'date' && (
+              <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+                <h4 className="text-sm font-medium text-gray-900 mb-3">Date Range</h4>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs text-gray-600 mb-1">From</label>
+                    <input
+                      type="date"
+                      value={filters.dateFrom}
+                      onChange={(e) => setFilters(prev => ({ ...prev, dateFrom: e.target.value }))}
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-gray-600 mb-1">To</label>
+                    <input
+                      type="date"
+                      value={filters.dateTo}
+                      onChange={(e) => setFilters(prev => ({ ...prev, dateTo: e.target.value }))}
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            {activeFilterType === 'category' && (
+              <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+                <h4 className="text-sm font-medium text-gray-900 mb-3">Category</h4>
+                <select
+                  value={filters.category}
+                  onChange={(e) => setFilters(prev => ({ ...prev, category: e.target.value }))}
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                >
+                  <option value="">All Categories</option>
+                  <option value="unplanned">Unplanned Expenses</option>
+                  <option value="uncategorized">Uncategorized</option>
+                  {state.categories.map((category) => (
+                    <option key={category.id} value={category.id}>
+                      {category.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       {filteredTransactions.length === 0 ? (
         <Card>

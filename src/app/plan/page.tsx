@@ -5,7 +5,7 @@ import { Card, CardHeader, CardContent, CardTitle } from '@/components/Card'
 import { Button } from '@/components/Button'
 import { MonthSwitcher } from '@/components/MonthSwitcher'
 import { Modal } from '@/components/Modal'
-import { FloatingActionButton } from '@/components/FloatingActionButton'
+import { ExpandableFloatingButton } from '@/components/ExpandableFloatingButton'
 import { ConfirmModal } from '@/components/ConfirmModal'
 import { CopyPreviousModal } from '@/components/CopyPreviousModal'
 import { CategoryDetailModal } from '@/components/CategoryDetailModal'
@@ -413,8 +413,9 @@ export default function PlanPage() {
         transactions={state.transactions}
       />
 
-      {/* Floating Action Button */}
-      <FloatingActionButton
+      {/* Expandable Floating Action Button */}
+      <ExpandableFloatingButton
+        variant="plan"
         onAddIncome={() => setIsIncomeModalOpen(true)}
         onAddCategory={() => setIsCategoryModalOpen(true)}
       />

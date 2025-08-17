@@ -82,7 +82,7 @@ export class SyncService {
               deleted: budget.deleted || false
             })
         }
-      } catch (budgetError) {
+      } catch {
         // Budget might not exist remotely yet, try to create it
         console.log('Creating budget remotely:', budget.id)
         try {
@@ -124,7 +124,13 @@ export class SyncService {
     const transactions = await db.getTransactionsForMonth(month)
     
     for (const transaction of transactions) {
-      await this.pushItem('transactions', transaction as unknown as { id: string; updated_at: string; [key: string]: unknown })
+      // Map is_unplanned to is_emergency for database compatibility
+      const dbTransaction = {
+        ...transaction,
+        is_emergency: transaction.is_unplanned,
+        is_unplanned: undefined
+      }
+      await this.pushItem('transactions', dbTransaction as unknown as { id: string; updated_at: string; [key: string]: unknown })
     }
   }
 
@@ -258,7 +264,13 @@ export class SyncService {
 
     if (transactions) {
       for (const transaction of transactions) {
-        await db.saveTransaction(transaction)
+        // Map is_emergency to is_unplanned for code compatibility
+        const localTransaction = {
+          ...transaction,
+          is_unplanned: (transaction as Record<string, unknown>).is_emergency as boolean || false,
+          is_emergency: undefined
+        }
+        await db.saveTransaction(localTransaction)
       }
     }
   }
