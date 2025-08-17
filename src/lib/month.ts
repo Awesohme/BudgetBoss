@@ -62,3 +62,24 @@ export const parseFormattedNumber = (value: string): number => {
   const cleanValue = value.replace(/[^\d.]/g, '')
   return parseFloat(cleanValue) || 0
 }
+
+export const formatSmartCurrency = (amount: number, compact = false): string => {
+  if (compact) {
+    // For compact display in small spaces
+    if (amount >= 1000000) {
+      return `₦${(amount / 1000000).toFixed(1)}M`
+    } else if (amount >= 1000) {
+      return `₦${(amount / 1000).toFixed(1)}K`
+    }
+  }
+  
+  return formatCurrency(amount)
+}
+
+export const getAmountTextSize = (amount: number): string => {
+  const formatted = formatCurrency(amount)
+  
+  if (formatted.length > 12) return 'text-sm font-bold' // Very long amounts
+  if (formatted.length > 9) return 'text-base font-bold'   // Long amounts
+  return 'text-xl font-bold'  // Normal amounts
+}

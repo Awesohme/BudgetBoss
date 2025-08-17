@@ -10,7 +10,7 @@ import { BorrowModal } from '@/components/BorrowModal'
 import { Accordion } from '@/components/Accordion'
 import { ExpandableFloatingButton } from '@/components/ExpandableFloatingButton'
 import { store } from '@/lib/store'
-import { formatCurrency, getCurrentMonth } from '@/lib/month'
+import { formatCurrency, getCurrentMonth, formatSmartCurrency, getAmountTextSize } from '@/lib/month'
 import { syncService } from '@/lib/sync'
 import { supabase } from '@/lib/supabase'
 import type { BudgetState, User } from '@/lib/models'
@@ -118,7 +118,7 @@ export default function HomePage() {
         <div className="flex items-center justify-between bg-gradient-to-r from-indigo-600 to-purple-600 p-6 rounded-2xl shadow-lg">
           <div>
             <div className="flex items-center space-x-3">
-              <h1 className="text-3xl font-bold text-white tracking-tight">BudgetBoss</h1>
+              <h1 className="text-2xl font-bold text-white tracking-tight">BudgetBoss</h1>
               <span className={`px-3 py-1 text-xs font-semibold rounded-full ${
                 user 
                   ? 'bg-green-400/20 text-green-100 border border-green-400/30' 
@@ -173,22 +173,22 @@ export default function HomePage() {
           <CardContent className="space-y-6 pt-2">
             {/* Income vs Budget vs Spent */}
             <div className="grid grid-cols-3 gap-4">
-              <div className="text-center p-4 bg-green-50 rounded-xl border border-green-100">
+              <div className="text-center p-3 bg-green-50 rounded-xl border border-green-100">
                 <p className="text-xs font-medium text-green-700 uppercase tracking-wide">Income</p>
-                <p className="text-xl font-bold text-green-600 mt-1">
-                  {formatCurrency(totalIncome)}
+                <p className={`${getAmountTextSize(totalIncome)} text-green-600 mt-1`}>
+                  {formatSmartCurrency(totalIncome, totalIncome > 100000)}
                 </p>
               </div>
-              <div className="text-center p-4 bg-blue-50 rounded-xl border border-blue-100">
+              <div className="text-center p-3 bg-blue-50 rounded-xl border border-blue-100">
                 <p className="text-xs font-medium text-blue-700 uppercase tracking-wide">Budgeted</p>
-                <p className="text-xl font-bold text-blue-600 mt-1">
-                  {formatCurrency(totalBudgeted)}
+                <p className={`${getAmountTextSize(totalBudgeted)} text-blue-600 mt-1`}>
+                  {formatSmartCurrency(totalBudgeted, totalBudgeted > 100000)}
                 </p>
               </div>
-              <div className="text-center p-4 bg-gray-50 rounded-xl border border-gray-200">
+              <div className="text-center p-3 bg-gray-50 rounded-xl border border-gray-200">
                 <p className="text-xs font-medium text-gray-700 uppercase tracking-wide">Spent</p>
-                <p className="text-xl font-bold text-gray-800 mt-1">
-                  {formatCurrency(totalSpent)}
+                <p className={`${getAmountTextSize(totalSpent)} text-gray-800 mt-1`}>
+                  {formatSmartCurrency(totalSpent, totalSpent > 100000)}
                 </p>
               </div>
             </div>
