@@ -1,4 +1,4 @@
-const CACHE_NAME = 'budgetboss-v1'
+const CACHE_NAME = 'budgetboss-v2'
 const urlsToCache = [
   '/',
   '/plan',
@@ -9,14 +9,6 @@ const urlsToCache = [
   '/manifest.webmanifest'
 ]
 
-self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => {
-        return cache.addAll(urlsToCache)
-      })
-  )
-})
 
 self.addEventListener('fetch', (event) => {
   event.respondWith(
@@ -39,5 +31,25 @@ self.addEventListener('activate', (event) => {
         })
       )
     })
+  )
+})
+
+// Handle messages from the app (for update notifications)
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting()
+  }
+})
+
+// Enhanced install event
+self.addEventListener('install', (event) => {
+  // Skip waiting so new service worker activates immediately
+  self.skipWaiting()
+  
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then((cache) => {
+        return cache.addAll(urlsToCache)
+      })
   )
 })
