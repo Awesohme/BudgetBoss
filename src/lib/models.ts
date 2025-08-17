@@ -45,6 +45,7 @@ export interface Category {
   budgeted: number
   borrowed: number // can be negative if lent out
   color: string
+  notes?: string // breakdown notes and reminders
   created_at: string
   updated_at: string
   deleted?: boolean

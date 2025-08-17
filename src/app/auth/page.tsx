@@ -27,11 +27,20 @@ export default function AuthPage() {
         }
       })
 
-      if (error) throw error
+      if (error) {
+        // Show friendly error for common database issues
+        if (error.message.includes('Database error') || error.message.includes('saving new user')) {
+          setError('Authentication is currently unavailable. You can continue using the app offline - your data will be saved locally.')
+        } else {
+          setError(error.message)
+        }
+        return
+      }
 
       setMessage('Check your email for a magic link to sign in!')
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred')
+      console.error('Auth error:', err)
+      setError('Authentication is currently unavailable. You can continue using the app offline.')
     } finally {
       setIsLoading(false)
     }
@@ -106,6 +115,15 @@ export default function AuthPage() {
               <li>• Access from anywhere</li>
             </ul>
           </div>
+
+          {error && error.includes('offline') && (
+            <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+              <h4 className="text-sm font-medium text-yellow-900 mb-1">📱 Offline Mode Available</h4>
+              <p className="text-xs text-yellow-800">
+                Your budgets will be saved locally on this device. You can set up cloud sync later.
+              </p>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

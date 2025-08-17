@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/Card'
 import { Button } from '@/components/Button'
 import { Modal } from '@/components/Modal'
 import { MonthSwitcher } from '@/components/MonthSwitcher'
+import { ConfirmModal } from '@/components/ConfirmModal'
 import { store } from '@/lib/store'
 import { formatCurrency } from '@/lib/month'
 import type { BudgetState, Transaction } from '@/lib/models'
@@ -14,6 +15,17 @@ export default function HistoryPage() {
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null)
   const [formData, setFormData] = useState({ amount: '', description: '', category_id: '', account: '', is_emergency: false })
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean
+    title: string
+    message: string
+    onConfirm: () => void
+  }>({
+    isOpen: false,
+    title: '',
+    message: '',
+    onConfirm: () => {}
+  })
 
   useEffect(() => {
     const unsubscribe = store.subscribe(setState)
@@ -53,10 +65,13 @@ export default function HistoryPage() {
     }
   }
 
-  const handleDelete = async (id: string) => {
-    if (confirm('Are you sure you want to delete this transaction?')) {
-      await store.deleteTransaction(id)
-    }
+  const handleDelete = (id: string) => {
+    setConfirmModal({
+      isOpen: true,
+      title: 'Delete Transaction',
+      message: 'Are you sure you want to delete this transaction? This action cannot be undone.',
+      onConfirm: () => store.deleteTransaction(id)
+    })
   }
 
   const formatDisplayValue = (value: string) => {
@@ -275,6 +290,18 @@ export default function HistoryPage() {
           </div>
         </form>
       </Modal>
+
+      {/* Confirmation Modal */}
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        onClose={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
+        onConfirm={confirmModal.onConfirm}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        variant="danger"
+        confirmText="Delete"
+        cancelText="Cancel"
+      />
     </div>
   )
 }

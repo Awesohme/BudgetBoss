@@ -155,7 +155,7 @@ export class BudgetStore {
     await db.markForSync(category.id)
   }
 
-  async updateCategory(id: string, updates: Partial<Pick<Category, 'name' | 'budgeted' | 'color'>>): Promise<void> {
+  async updateCategory(id: string, updates: Partial<Pick<Category, 'name' | 'budgeted' | 'color' | 'notes'>>): Promise<void> {
     const categories = this.state.categories.map(category => 
       category.id === id 
         ? { ...category, ...updates, updated_at: new Date().toISOString() }
@@ -249,32 +249,42 @@ export class BudgetStore {
     await db.markForSync(id)
   }
 
-  // Copy from previous month
-  async copyFromPreviousMonth(previousMonth: string): Promise<void> {
+  // Copy from previous month with selective options
+  async copyFromPreviousMonth(previousMonth: string, options: { incomes: boolean; categories: boolean } = { incomes: true, categories: true }): Promise<void> {
     if (!this.state.budget) return
 
     const previousPlan = await db.getPlan(previousMonth)
-    if (!previousPlan || (!previousPlan.incomes.length && !previousPlan.categories.length)) {
+    if (!previousPlan) {
       throw new Error('No previous month data found')
     }
 
-    // Copy incomes and categories
-    const newIncomes = previousPlan.incomes.map(income => ({
-      ...income,
-      id: crypto.randomUUID(),
-      budget_id: this.state.budget!.id,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    }))
+    let newIncomes = [...this.state.incomes]
+    let newCategories = [...this.state.categories]
 
-    const newCategories = previousPlan.categories.map(category => ({
-      ...category,
-      id: crypto.randomUUID(),
-      budget_id: this.state.budget!.id,
-      borrowed: 0, // Reset borrowed amounts
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    }))
+    // Copy incomes if requested
+    if (options.incomes && previousPlan.incomes.length > 0) {
+      const copiedIncomes = previousPlan.incomes.map(income => ({
+        ...income,
+        id: crypto.randomUUID(),
+        budget_id: this.state.budget!.id,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      }))
+      newIncomes = [...newIncomes, ...copiedIncomes]
+    }
+
+    // Copy categories if requested
+    if (options.categories && previousPlan.categories.length > 0) {
+      const copiedCategories = previousPlan.categories.map(category => ({
+        ...category,
+        id: crypto.randomUUID(),
+        budget_id: this.state.budget!.id,
+        borrowed: 0, // Reset borrowed amounts
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      }))
+      newCategories = [...newCategories, ...copiedCategories]
+    }
 
     this.setState({
       incomes: newIncomes,

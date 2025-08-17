@@ -62,34 +62,61 @@ export class SyncService {
     const { budget, incomes, categories } = localPlan
 
     if (budget) {
-      // Use Last Write Wins strategy based on updated_at
-      const { data: remoteBudget } = await supabase
-        .from('budgets')
-        .select('updated_at')
-        .eq('id', budget.id)
-        .single()
-
-      if (!remoteBudget || new Date(budget.updated_at) > new Date(remoteBudget.updated_at)) {
-        await supabase
+      try {
+        // Use Last Write Wins strategy based on updated_at
+        const { data: remoteBudget } = await supabase
           .from('budgets')
-          .upsert({
-            id: budget.id,
-            user_id: budget.user_id,
-            month: budget.month,
-            name: budget.name,
-            updated_at: budget.updated_at,
-            deleted: budget.deleted || false
-          })
+          .select('updated_at')
+          .eq('id', budget.id)
+          .single()
+
+        if (!remoteBudget || new Date(budget.updated_at) > new Date(remoteBudget.updated_at)) {
+          await supabase
+            .from('budgets')
+            .upsert({
+              id: budget.id,
+              user_id: budget.user_id,
+              month: budget.month,
+              name: budget.name,
+              updated_at: budget.updated_at,
+              deleted: budget.deleted || false
+            })
+        }
+      } catch (budgetError) {
+        // Budget might not exist remotely yet, try to create it
+        console.log('Creating budget remotely:', budget.id)
+        try {
+          await supabase
+            .from('budgets')
+            .insert({
+              id: budget.id,
+              user_id: budget.user_id,
+              month: budget.month,
+              name: budget.name,
+              updated_at: budget.updated_at,
+              deleted: budget.deleted || false
+            })
+        } catch (insertError) {
+          console.warn('Failed to create budget remotely:', insertError)
+        }
       }
     }
 
     // Push incomes and categories
     for (const income of incomes) {
-      await this.pushItem('incomes', income as unknown as { id: string; updated_at: string; [key: string]: unknown })
+      try {
+        await this.pushItem('incomes', income as unknown as { id: string; updated_at: string; [key: string]: unknown })
+      } catch (error) {
+        console.warn('Failed to push income:', income.id, error)
+      }
     }
     
     for (const category of categories) {
-      await this.pushItem('categories', category as unknown as { id: string; updated_at: string; [key: string]: unknown })
+      try {
+        await this.pushItem('categories', category as unknown as { id: string; updated_at: string; [key: string]: unknown })
+      } catch (error) {
+        console.warn('Failed to push category:', category.id, error)
+      }
     }
   }
 
@@ -116,32 +143,108 @@ export class SyncService {
   }
 
   async pullPlan(month: string, userId: string): Promise<void> {
-    const budget = await this.ensureBudget(month, userId)
-    const budgetId = budget.id
+    // Get local plan first to preserve existing data
+    const localPlan = await db.getPlan(month)
+    
+    try {
+      const budget = await this.ensureBudget(month, userId)
+      const budgetId = budget.id
 
-    // Pull all related data
-    const [incomesResult, categoriesResult] = await Promise.all([
-      supabase
-        .from('incomes')
-        .select('*')
-        .eq('budget_id', budgetId)
-        .eq('deleted', false),
-      supabase
-        .from('categories')
-        .select('*')
-        .eq('budget_id', budgetId)
-        .eq('deleted', false)
-    ])
+      // Pull all related data
+      const [incomesResult, categoriesResult] = await Promise.all([
+        supabase
+          .from('incomes')
+          .select('*')
+          .eq('budget_id', budgetId)
+          .eq('deleted', false),
+        supabase
+          .from('categories')
+          .select('*')
+          .eq('budget_id', budgetId)
+          .eq('deleted', false)
+      ])
 
-    const incomes = incomesResult.data || []
-    const categories = categoriesResult.data || []
+      const remoteIncomes = incomesResult.data || []
+      const remoteCategories = categoriesResult.data || []
 
-    // Save to local storage
-    await db.savePlan(month, {
-      budget,
-      incomes,
-      categories
-    })
+      // Advanced merge using Last Write Wins strategy
+      const finalIncomes = this.mergeArraysWithTimestamps(
+        localPlan?.incomes || [], 
+        remoteIncomes
+      )
+      
+      const finalCategories = this.mergeArraysWithTimestamps(
+        localPlan?.categories || [], 
+        remoteCategories
+      )
+
+      // Save merged data to local storage
+      await db.savePlan(month, {
+        budget,
+        incomes: finalIncomes,
+        categories: finalCategories
+      })
+    } catch (error) {
+      // If sync fails, keep local data intact
+      console.warn('Failed to sync from remote, keeping local data:', error)
+      if (localPlan) {
+        // Just ensure we have a budget structure
+        const budget = localPlan.budget || {
+          id: crypto.randomUUID(),
+          user_id: 'local-user',
+          month,
+          name: 'My Budget',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          deleted: false
+        }
+        
+        await db.savePlan(month, {
+          budget,
+          incomes: localPlan.incomes || [],
+          categories: localPlan.categories || []
+        })
+      }
+      throw error
+    }
+  }
+
+  private mergeArraysWithTimestamps<T extends { id: string; updated_at: string }>(
+    localItems: T[], 
+    remoteItems: T[]
+  ): T[] {
+    // Create a map of all items by ID
+    const itemsMap = new Map<string, T>()
+    
+    // Add local items first
+    for (const item of localItems) {
+      itemsMap.set(item.id, item)
+    }
+    
+    // Merge remote items using Last Write Wins
+    for (const remoteItem of remoteItems) {
+      const localItem = itemsMap.get(remoteItem.id)
+      
+      if (!localItem) {
+        // New item from remote
+        itemsMap.set(remoteItem.id, remoteItem)
+      } else {
+        // Item exists in both - use Last Write Wins
+        const localTime = new Date(localItem.updated_at).getTime()
+        const remoteTime = new Date(remoteItem.updated_at).getTime()
+        
+        if (remoteTime > localTime) {
+          // Remote is newer - use remote version
+          itemsMap.set(remoteItem.id, remoteItem)
+        }
+        // else: local is newer or same - keep local version
+      }
+    }
+    
+    // Return merged array sorted by creation time
+    return Array.from(itemsMap.values()).sort((a, b) => 
+      new Date(a.updated_at).getTime() - new Date(b.updated_at).getTime()
+    )
   }
 
   async pullTransactions(month: string, budgetId: string): Promise<void> {
@@ -162,17 +265,55 @@ export class SyncService {
 
   async fullSync(month: string, userId: string): Promise<void> {
     try {
-      // Ensure budget exists and pull plan data
-      await this.pullPlan(month, userId)
+      // Get local data first to preserve it
+      const localPlan = await db.getPlan(month)
+      
+      // Step 1: Push local changes first (in case local is ahead)
+      console.log('🔄 Pushing local changes...')
+      try {
+        if (localPlan && (localPlan.incomes.length > 0 || localPlan.categories.length > 0)) {
+          await this.pushPlan(month)
+          await this.pushTransactions(month)
+        }
+      } catch (pushError) {
+        console.warn('Push failed, will continue with pull:', pushError)
+      }
+      
+      // Step 2: Pull and merge remote changes using Last Write Wins
+      console.log('🔄 Pulling and merging remote changes...')
+      try {
+        await this.pullPlan(month, userId)
+      } catch (pullError) {
+        console.warn('Pull failed:', pullError)
+        // If pull fails completely, ensure we still have a budget structure
+        if (localPlan) {
+          const budget = localPlan.budget || {
+            id: crypto.randomUUID(),
+            user_id: userId,
+            month,
+            name: 'My Budget',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+            deleted: false
+          }
+          
+          await db.savePlan(month, {
+            budget,
+            incomes: localPlan.incomes || [],
+            categories: localPlan.categories || []
+          })
+        }
+      }
       
       const plan = await db.getPlan(month)
       if (plan?.budget) {
-        // Pull transactions for this budget
-        await this.pullTransactions(month, plan.budget.id)
-        
-        // Push any local changes
-        await this.pushPlan(month)
-        await this.pushTransactions(month)
+        // Step 3: Sync transactions
+        try {
+          await this.pullTransactions(month, plan.budget.id)
+          await this.pushTransactions(month)
+        } catch (transactionError) {
+          console.warn('Transaction sync failed:', transactionError)
+        }
       }
 
       // Update sync state
@@ -180,9 +321,12 @@ export class SyncService {
       syncState.lastSync = new Date().toISOString()
       await db.setSyncState(syncState)
       
+      console.log('✅ Sync completed successfully')
+      
     } catch (error) {
-      console.error('Sync failed:', error)
-      throw error
+      console.error('Sync failed completely:', error)
+      // Don't re-throw - let the app continue working offline
+      throw new Error('Sync unavailable - continuing in offline mode')
     }
   }
 

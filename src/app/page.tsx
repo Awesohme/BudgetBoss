@@ -76,8 +76,12 @@ export default function HomePage() {
     setIsSyncing(true)
     try {
       await store.syncWithRemote(user.id)
+      // Force reload to show synced data
+      await store.loadMonth(store.getCurrentMonth())
     } catch (error) {
       console.error('Sync failed:', error)
+      // Show user-friendly error message but don't break the app
+      alert('Sync is currently unavailable. Your data is saved locally and will sync when the connection is restored.')
     } finally {
       setIsSyncing(false)
     }
