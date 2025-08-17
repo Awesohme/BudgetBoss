@@ -127,6 +127,16 @@ export default function HomePage() {
         </div>
         
         <div className="flex items-center space-x-2">
+          {/* Temporary manual refresh button */}
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => window.location.reload()}
+            className="text-white hover:bg-gray-700"
+          >
+            🔄 Refresh
+          </Button>
+          
           {user && (
             <Button
               size="sm"

@@ -33,6 +33,12 @@ export function useServiceWorkerUpdate(): UseServiceWorkerUpdateReturn {
 
           // Check for updates immediately
           swRegistration.update()
+          
+          // Force check if there's already a waiting worker
+          if (swRegistration.waiting) {
+            console.log('Service worker already waiting, showing update notification')
+            setUpdateAvailable(true)
+          }
 
           // Listen for new service worker waiting
           const handleUpdateFound = () => {

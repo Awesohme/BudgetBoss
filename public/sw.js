@@ -1,4 +1,4 @@
-const CACHE_NAME = 'budgetboss-v2'
+const CACHE_NAME = 'budgetboss-v3'
 const urlsToCache = [
   '/',
   '/plan',
