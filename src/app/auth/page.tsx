@@ -28,15 +28,17 @@ export default function AuthPage() {
       })
 
       if (error) {
-        // Show friendly error for common issues
-        let friendlyMessage = 'Authentication is currently unavailable. You can continue using the app offline - your data will be saved locally.'
+        console.error('Supabase auth error:', error)
         
-        if (error.message.includes('Invalid API key')) {
-          friendlyMessage = 'Cloud authentication is not set up yet. The app works perfectly offline - your data is saved locally on this device.'
-        } else if (error.message.includes('Database error') || error.message.includes('saving new user')) {
-          friendlyMessage = 'Authentication database is not ready. You can continue using the app offline - your data will be saved locally.'
-        } else if (error.message.includes('Email not confirmed')) {
+        // Show friendly error for common issues
+        let friendlyMessage = 'Unable to send magic link at the moment. You can continue using the app offline - your data will be saved locally.'
+        
+        if (error.message.includes('Email not confirmed')) {
           friendlyMessage = 'Please check your email and click the magic link to complete sign in.'
+        } else if (error.message.includes('rate') || error.message.includes('too many')) {
+          friendlyMessage = 'Too many sign-in attempts. Please wait a moment and try again.'
+        } else if (error.message.includes('Invalid email')) {
+          friendlyMessage = 'Please enter a valid email address.'
         }
         
         setError(friendlyMessage)

@@ -7,7 +7,7 @@ import { Button } from '@/components/Button'
 import { MonthSwitcher } from '@/components/MonthSwitcher'
 import { QuickAdd } from '@/components/QuickAdd'
 import { BorrowModal } from '@/components/BorrowModal'
-import { Progress } from '@/components/Progress'
+import { Accordion } from '@/components/Accordion'
 import { store } from '@/lib/store'
 import { formatCurrency, getCurrentMonth } from '@/lib/month'
 import { syncService } from '@/lib/sync'
@@ -97,7 +97,6 @@ export default function HomePage() {
   const actualLeft = totalIncome - totalBudgeted
   const borrowedLent = store.getBorrowedLentSummary()
 
-  const warningCategories = categoriesWithSpent.filter(cat => cat.health === 'warning')
   const overspentCategories = categoriesWithSpent.filter(cat => cat.health === 'overspent')
 
   if (isLoading) {
@@ -242,13 +241,14 @@ export default function HomePage() {
         </Card>
       )}
 
-      {/* Warnings */}
-      {(warningCategories.length > 0 || overspentCategories.length > 0) && (
-        <Card>
-          <CardHeader>
-            <CardTitle>⚠️ Attention Needed</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
+      {/* Attention Needed - Only Overspent Categories */}
+      {overspentCategories.length > 0 && (
+        <Accordion 
+          title={`⚠️ Attention Needed (${overspentCategories.length})`}
+          defaultOpen={false}
+          className="bg-white"
+        >
+          <div className="space-y-3">
             {overspentCategories.map(category => (
               <div key={category.id} className="p-3 bg-red-50 border border-red-200 rounded-lg">
                 <div className="flex justify-between items-center">
@@ -259,25 +259,8 @@ export default function HomePage() {
                 </div>
               </div>
             ))}
-            
-            {warningCategories.map(category => (
-              <div key={category.id} className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                <div className="flex justify-between items-center">
-                  <span className="font-medium text-yellow-900">{category.name}</span>
-                  <span className="text-yellow-700">
-                    80% spent ({formatCurrency(category.remaining)} left)
-                  </span>
-                </div>
-                <Progress 
-                  value={category.spent} 
-                  max={category.budgeted + category.borrowed} 
-                  color="yellow"
-                  className="mt-2"
-                />
-              </div>
-            ))}
-          </CardContent>
-        </Card>
+          </div>
+        </Accordion>
       )}
 
       {/* Quick Actions */}

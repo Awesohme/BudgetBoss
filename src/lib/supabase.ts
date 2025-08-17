@@ -94,7 +94,7 @@ export type Database = {
           amount: number
           description: string
           account: string
-          is_emergency: boolean
+          is_unplanned: boolean
           date: string
           created_at: string
           updated_at: string
