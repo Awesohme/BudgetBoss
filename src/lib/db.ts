@@ -1,7 +1,7 @@
 // IndexedDB layer for offline storage using idb-keyval
 
 import { get, set, del, keys } from 'idb-keyval'
-import type { Budget, Income, FixedExpense, Category, Transaction, Settings } from './models'
+import type { Budget, Income, Category, Transaction, Settings } from './models'
 
 // Storage keys
 const PLAN_KEY = (month: string) => `plan:${month}`
@@ -25,7 +25,6 @@ interface SyncState {
 interface PlanData {
   budget?: Budget
   incomes: Income[]
-  fixedExpenses: FixedExpense[]
   categories: Category[]
 }
 

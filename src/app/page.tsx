@@ -85,9 +85,8 @@ export default function HomePage() {
 
   const categoriesWithSpent = store.getCategoriesWithSpent()
   const totalIncome = store.getTotalIncome()
-  const totalFixed = store.getTotalFixedExpenses()
   const totalBudgeted = store.getTotalBudgeted()
-  const actualLeft = store.getActualLeft()
+  const actualLeft = totalIncome - totalBudgeted
   const borrowedLent = store.getBorrowedLentSummary()
 
   const warningCategories = categoriesWithSpent.filter(cat => cat.health === 'warning')
@@ -153,36 +152,22 @@ export default function HomePage() {
         <CardContent className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <p className="text-sm text-gray-600">Income</p>
+              <p className="text-sm text-gray-600">Total Income</p>
               <p className="text-lg font-semibold text-green-600">
                 {formatCurrency(totalIncome)}
               </p>
             </div>
             <div>
-              <p className="text-sm text-gray-600">Fixed Expenses</p>
-              <p className="text-lg font-semibold text-red-600">
-                {formatCurrency(totalFixed)}
+              <p className="text-sm text-gray-600">Total Budgeted</p>
+              <p className="text-lg font-semibold text-blue-600">
+                {formatCurrency(totalBudgeted)}
               </p>
             </div>
           </div>
           
-          <div>
-            <p className="text-sm text-gray-600">Avail. For Categories</p>
-            <p className="text-xl font-bold text-blue-600">
-              {formatCurrency(totalIncome - totalFixed)}
-            </p>
-          </div>
-          
-          <div>
-            <p className="text-sm text-gray-600">Budgeted</p>
-            <p className="text-lg font-semibold text-gray-900">
-              {formatCurrency(totalBudgeted)}
-            </p>
-          </div>
-          
-          <div>
-            <p className="text-sm text-gray-600">Actual Left</p>
-            <p className={`text-lg font-semibold ${actualLeft >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+          <div className="border-t pt-3">
+            <p className="text-sm text-gray-600">Remaining</p>
+            <p className={`text-xl font-bold ${actualLeft >= 0 ? 'text-green-600' : 'text-red-600'}`}>
               {formatCurrency(actualLeft)}
             </p>
           </div>

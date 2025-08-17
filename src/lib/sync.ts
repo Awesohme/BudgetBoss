@@ -24,7 +24,7 @@ export class SyncService {
 
     if (remoteBudget) {
       // Save to local storage
-      const plan = await db.getPlan(month) || { incomes: [], fixedExpenses: [], categories: [] }
+      const plan = await db.getPlan(month) || { incomes: [], categories: [] }
       plan.budget = remoteBudget
       await db.savePlan(month, plan)
       return remoteBudget
@@ -48,7 +48,7 @@ export class SyncService {
     if (error) throw error
 
     // Save to local storage
-    const plan = await db.getPlan(month) || { incomes: [], fixedExpenses: [], categories: [] }
+    const plan = await db.getPlan(month) || { incomes: [], categories: [] }
     plan.budget = createdBudget
     await db.savePlan(month, plan)
     
@@ -59,7 +59,7 @@ export class SyncService {
     const localPlan = await db.getPlan(month)
     if (!localPlan) return
 
-    const { budget, incomes, fixedExpenses, categories } = localPlan
+    const { budget, incomes, categories } = localPlan
 
     if (budget) {
       // Use Last Write Wins strategy based on updated_at
@@ -83,13 +83,9 @@ export class SyncService {
       }
     }
 
-    // Push incomes, fixed expenses, and categories
+    // Push incomes and categories
     for (const income of incomes) {
       await this.pushItem('incomes', income as unknown as { id: string; updated_at: string; [key: string]: unknown })
-    }
-    
-    for (const expense of fixedExpenses) {
-      await this.pushItem('fixed_expenses', expense as unknown as { id: string; updated_at: string; [key: string]: unknown })
     }
     
     for (const category of categories) {
@@ -124,14 +120,9 @@ export class SyncService {
     const budgetId = budget.id
 
     // Pull all related data
-    const [incomesResult, expensesResult, categoriesResult] = await Promise.all([
+    const [incomesResult, categoriesResult] = await Promise.all([
       supabase
         .from('incomes')
-        .select('*')
-        .eq('budget_id', budgetId)
-        .eq('deleted', false),
-      supabase
-        .from('fixed_expenses')
         .select('*')
         .eq('budget_id', budgetId)
         .eq('deleted', false),
@@ -143,14 +134,12 @@ export class SyncService {
     ])
 
     const incomes = incomesResult.data || []
-    const fixedExpenses = expensesResult.data || []
     const categories = categoriesResult.data || []
 
     // Save to local storage
     await db.savePlan(month, {
       budget,
       incomes,
-      fixedExpenses,
       categories
     })
   }

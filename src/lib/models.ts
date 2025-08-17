@@ -86,7 +86,6 @@ export interface User {
 export interface BudgetState {
   budget?: Budget
   incomes: Income[]
-  fixedExpenses: FixedExpense[]
   categories: Category[]
   transactions: Transaction[]
   loading: boolean

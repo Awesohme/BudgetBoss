@@ -4,7 +4,7 @@ import { db } from './db'
 import { syncService } from './sync'
 import { getCurrentMonth } from './month'
 import type { 
-  Budget, Income, FixedExpense, Category, Transaction, 
+  Budget, Income, Category, Transaction, 
   BudgetState, QuickAddData, BorrowData, CategoryWithSpent, CategoryHealth 
 } from './models'
 
@@ -12,7 +12,6 @@ export class BudgetStore {
   private currentMonth: string = getCurrentMonth()
   private state: BudgetState = {
     incomes: [],
-    fixedExpenses: [],
     categories: [],
     transactions: [],
     loading: false
@@ -71,7 +70,6 @@ export class BudgetStore {
         plan = {
           budget,
           incomes: [],
-          fixedExpenses: [],
           categories: []
         }
         
@@ -83,7 +81,6 @@ export class BudgetStore {
       this.setState({
         budget: plan.budget,
         incomes: plan.incomes || [],
-        fixedExpenses: plan.fixedExpenses || [],
         categories: plan.categories || [],
         transactions,
         loading: false
@@ -134,45 +131,6 @@ export class BudgetStore {
     await db.markForSync(id)
   }
 
-  // Fixed expense actions
-  async addFixedExpense(name: string, amount: number): Promise<void> {
-    if (!this.state.budget) return
-
-    const expense: FixedExpense = {
-      id: crypto.randomUUID(),
-      budget_id: this.state.budget.id,
-      name,
-      amount,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      deleted: false
-    }
-
-    const newExpenses = [...this.state.fixedExpenses, expense]
-    this.setState({ fixedExpenses: newExpenses })
-
-    await this.savePlan()
-    await db.markForSync(expense.id)
-  }
-
-  async updateFixedExpense(id: string, updates: Partial<Pick<FixedExpense, 'name' | 'amount'>>): Promise<void> {
-    const fixedExpenses = this.state.fixedExpenses.map(expense => 
-      expense.id === id 
-        ? { ...expense, ...updates, updated_at: new Date().toISOString() }
-        : expense
-    )
-
-    this.setState({ fixedExpenses })
-    await this.savePlan()
-    await db.markForSync(id)
-  }
-
-  async deleteFixedExpense(id: string): Promise<void> {
-    const fixedExpenses = this.state.fixedExpenses.filter(expense => expense.id !== id)
-    this.setState({ fixedExpenses })
-    await this.savePlan()
-    await db.markForSync(id)
-  }
 
   // Category actions
   async addCategory(name: string, budgeted: number, color = '#3B82F6'): Promise<void> {
@@ -300,17 +258,9 @@ export class BudgetStore {
       throw new Error('No previous month data found')
     }
 
-    // Copy incomes and fixed expenses
+    // Copy incomes and categories
     const newIncomes = previousPlan.incomes.map(income => ({
       ...income,
-      id: crypto.randomUUID(),
-      budget_id: this.state.budget!.id,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    }))
-
-    const newFixedExpenses = previousPlan.fixedExpenses.map(expense => ({
-      ...expense,
       id: crypto.randomUUID(),
       budget_id: this.state.budget!.id,
       created_at: new Date().toISOString(),
@@ -328,7 +278,6 @@ export class BudgetStore {
 
     this.setState({
       incomes: newIncomes,
-      fixedExpenses: newFixedExpenses,
       categories: newCategories
     })
 
@@ -340,7 +289,6 @@ export class BudgetStore {
     await db.savePlan(this.currentMonth, {
       budget: this.state.budget,
       incomes: this.state.incomes,
-      fixedExpenses: this.state.fixedExpenses,
       categories: this.state.categories
     })
   }
@@ -350,20 +298,11 @@ export class BudgetStore {
     return this.state.incomes.reduce((sum, income) => sum + income.amount, 0)
   }
 
-  getTotalFixedExpenses(): number {
-    return this.state.fixedExpenses.reduce((sum, expense) => sum + expense.amount, 0)
-  }
 
   getTotalBudgeted(): number {
     return this.state.categories.reduce((sum, category) => sum + (category.budgeted + category.borrowed), 0)
   }
 
-  getActualLeft(): number {
-    const income = this.getTotalIncome()
-    const fixed = this.getTotalFixedExpenses()
-    const budgeted = this.getTotalBudgeted()
-    return income - fixed - budgeted
-  }
 
   getCategoriesWithSpent(): CategoryWithSpent[] {
     return this.state.categories.map(category => {

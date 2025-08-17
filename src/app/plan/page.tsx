@@ -12,10 +12,9 @@ import type { BudgetState } from '@/lib/models'
 export default function PlanPage() {
   const [state, setState] = useState<BudgetState>(store.getState())
   const [isIncomeModalOpen, setIsIncomeModalOpen] = useState(false)
-  const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false)
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false)
   const [formData, setFormData] = useState({ name: '', amount: '', category_id: '' })
-  const [editingItem, setEditingItem] = useState<{type: 'income' | 'expense' | 'category', id: string} | null>(null)
+  const [editingItem, setEditingItem] = useState<{type: 'income' | 'category', id: string} | null>(null)
   
   const handleAmountChange = (value: string) => {
     // Remove currency symbols and spaces, keep only numbers and decimal
@@ -57,20 +56,6 @@ export default function PlanPage() {
     setIsIncomeModalOpen(false)
   }
 
-  const handleAddExpense = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (editingItem?.type === 'expense') {
-      await store.updateFixedExpense(editingItem.id, {
-        name: formData.name,
-        amount: parseFloat(formData.amount)
-      })
-    } else {
-      await store.addFixedExpense(formData.name, parseFloat(formData.amount))
-    }
-    setFormData({ name: '', amount: '', category_id: '' })
-    setEditingItem(null)
-    setIsExpenseModalOpen(false)
-  }
 
   const handleAddCategory = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -107,9 +92,8 @@ export default function PlanPage() {
   }
 
   const totalIncome = store.getTotalIncome()
-  const totalFixed = store.getTotalFixedExpenses()
   const totalBudgeted = store.getTotalBudgeted()
-  const actualLeft = store.getActualLeft()
+  const actualLeft = totalIncome - totalBudgeted
 
   const colors = [
     '#3B82F6', '#EF4444', '#10B981', '#F59E0B',
@@ -120,7 +104,7 @@ export default function PlanPage() {
     <div className="p-4 space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-white bg-gray-800 p-4 rounded-lg">Plan Budget</h1>
-        {state.incomes.length === 0 && state.fixedExpenses.length === 0 && state.categories.length === 0 && (
+        {state.incomes.length === 0 && state.categories.length === 0 && (
           <Button 
             variant="secondary" 
             onClick={handleCopyPreviousMonth}
@@ -154,16 +138,8 @@ export default function PlanPage() {
             <span className="font-semibold text-green-600">{formatCurrency(totalIncome)}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-900">Fixed Expenses:</span>
-            <span className="font-semibold text-red-600">{formatCurrency(totalFixed)}</span>
-          </div>
-          <div className="flex justify-between border-t pt-2">
-            <span className="text-gray-900">Avail. For Categories:</span>
-            <span className="font-semibold text-blue-600">{formatCurrency(totalIncome - totalFixed)}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-gray-900">Currently Budgeted:</span>
-            <span className="font-semibold text-gray-900">{formatCurrency(totalBudgeted)}</span>
+            <span className="text-gray-900">Total Budgeted:</span>
+            <span className="font-semibold text-blue-600">{formatCurrency(totalBudgeted)}</span>
           </div>
           <div className="flex justify-between border-t pt-2">
             <span className="text-gray-900">Remaining:</span>
@@ -220,51 +196,6 @@ export default function PlanPage() {
         </CardContent>
       </Card>
 
-      {/* Fixed Expenses */}
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>Fixed Expenses</CardTitle>
-          <Button size="sm" onClick={() => setIsExpenseModalOpen(true)}>
-            + Add
-          </Button>
-        </CardHeader>
-        <CardContent>
-          {state.fixedExpenses.length === 0 ? (
-            <p className="text-gray-500 text-center py-4">No fixed expenses added yet</p>
-          ) : (
-            <div className="space-y-2">
-              {state.fixedExpenses.map((expense) => (
-                <div key={expense.id} className="flex justify-between items-center">
-                  <span className="text-gray-900">{expense.name}</span>
-                  <div className="flex items-center space-x-2">
-                    <span className="font-semibold text-gray-900">{formatCurrency(expense.amount)}</span>
-                    <button
-                      onClick={() => {
-                        setEditingItem({type: 'expense', id: expense.id})
-                        setFormData({name: expense.name, amount: expense.amount.toString(), category_id: ''})
-                        setIsExpenseModalOpen(true)
-                      }}
-                      className="text-blue-600 hover:text-blue-800 text-sm p-1"
-                    >
-                      ✏️
-                    </button>
-                    <button
-                      onClick={async () => {
-                        if (confirm('Delete this fixed expense?')) {
-                          await store.deleteFixedExpense(expense.id)
-                        }
-                      }}
-                      className="text-red-600 hover:text-red-800 text-sm p-1"
-                    >
-                      🗑️
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
 
       {/* Categories */}
       <Card>
@@ -365,41 +296,6 @@ export default function PlanPage() {
         </form>
       </Modal>
 
-      <Modal isOpen={isExpenseModalOpen} onClose={() => {setIsExpenseModalOpen(false); setEditingItem(null)}} title={editingItem?.type === 'expense' ? 'Edit Fixed Expense' : 'Add Fixed Expense'}>
-        <form onSubmit={handleAddExpense} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
-            <input
-              type="text"
-              value={formData.name}
-              onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-              placeholder="e.g., Rent, Insurance"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-400"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Amount</label>
-            <div className="relative">
-              <span className="absolute left-3 top-2 text-gray-500">₦</span>
-              <input
-                type="text"
-                value={formatDisplayValue(formData.amount)}
-                onChange={(e) => handleAmountChange(e.target.value)}
-                placeholder="0.00"
-                className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-400"
-                required
-              />
-            </div>
-          </div>
-          <div className="flex space-x-3">
-            <Button type="button" variant="secondary" onClick={() => setIsExpenseModalOpen(false)} className="flex-1">
-              Cancel
-            </Button>
-            <Button type="submit" className="flex-1">{editingItem?.type === 'expense' ? 'Update Expense' : 'Add Expense'}</Button>
-          </div>
-        </form>
-      </Modal>
 
       <Modal isOpen={isCategoryModalOpen} onClose={() => {setIsCategoryModalOpen(false); setEditingItem(null)}} title={editingItem?.type === 'category' ? 'Edit Category' : 'Add Category'}>
         <form onSubmit={handleAddCategory} className="space-y-4">
