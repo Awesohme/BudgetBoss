@@ -29,26 +29,14 @@ export default function AuthPage() {
 
       if (error) {
         console.error('Supabase auth error:', error)
-        
-        // Show friendly error for common issues
-        let friendlyMessage = 'Unable to send magic link at the moment. You can continue using the app offline - your data will be saved locally.'
-        
-        if (error.message.includes('Email not confirmed')) {
-          friendlyMessage = 'Please check your email and click the magic link to complete sign in.'
-        } else if (error.message.includes('rate') || error.message.includes('too many')) {
-          friendlyMessage = 'Too many sign-in attempts. Please wait a moment and try again.'
-        } else if (error.message.includes('Invalid email')) {
-          friendlyMessage = 'Please enter a valid email address.'
-        }
-        
-        setError(friendlyMessage)
+        setError('Unable to send magic link. You can continue using the app offline - your data will be saved locally.')
         return
       }
 
       setMessage('Check your email for a magic link to sign in!')
     } catch (err) {
       console.error('Auth error:', err)
-      setError('Authentication is currently unavailable. You can continue using the app offline.')
+      setError('Unable to send magic link. You can continue using the app offline - your data will be saved locally.')
     } finally {
       setIsLoading(false)
     }
@@ -124,20 +112,18 @@ export default function AuthPage() {
             </ul>
           </div>
 
-          {error && (error.includes('offline') || error.includes('not set up') || error.includes('not ready')) && (
-            <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <h4 className="text-sm font-medium text-blue-900 mb-2">📱 Offline Mode Available</h4>
-              <p className="text-xs text-blue-800 mb-2">
-                Your budgets will be saved locally on this device. You can set up cloud sync later.
-              </p>
-              <button
-                onClick={() => router.push('/')}
-                className="text-xs bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition-colors"
-              >
-                Continue to App →
-              </button>
-            </div>
-          )}
+          <div className="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+            <h4 className="text-sm font-medium text-gray-900 mb-2">📱 Offline Mode Available</h4>
+            <p className="text-xs text-gray-700 mb-2">
+              Your budgets will be saved locally on this device. You can set up cloud sync later.
+            </p>
+            <button
+              onClick={() => router.push('/')}
+              className="text-xs bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition-colors"
+            >
+              Continue to App →
+            </button>
+          </div>
         </CardContent>
       </Card>
     </div>
