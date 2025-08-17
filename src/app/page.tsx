@@ -8,6 +8,7 @@ import { MonthSwitcher } from '@/components/MonthSwitcher'
 import { QuickAdd } from '@/components/QuickAdd'
 import { BorrowModal } from '@/components/BorrowModal'
 import { Accordion } from '@/components/Accordion'
+import { ExpandableFloatingButton } from '@/components/ExpandableFloatingButton'
 import { store } from '@/lib/store'
 import { formatCurrency, getCurrentMonth } from '@/lib/month'
 import { syncService } from '@/lib/sync'
@@ -94,7 +95,7 @@ export default function HomePage() {
   const totalOverspent = store.getTotalOverspent()
   const totalUnplannedSpent = store.getTotalUnplannedSpent()
   const budgetRemaining = store.getBudgetRemaining()
-  const actualLeft = totalIncome - totalBudgeted
+  const actualLeft = totalIncome - totalBudgeted - totalUnplannedSpent
   const borrowedLent = store.getBorrowedLentSummary()
 
   const overspentCategories = categoriesWithSpent.filter(cat => cat.health === 'overspent')
@@ -122,7 +123,7 @@ export default function HomePage() {
             </span>
           </div>
           <p className="text-gray-300">
-            {user ? `Welcome back!` : 'Offline Mode'}
+            {user ? `Welcome back!` : 'Refresh'}
           </p>
         </div>
         
@@ -273,27 +274,6 @@ export default function HomePage() {
         </Accordion>
       )}
 
-      {/* Quick Actions */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Quick Actions</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 gap-3">
-            <Button onClick={() => setIsQuickAddOpen(true)} className="w-full">
-              💰 Add Transaction
-            </Button>
-            <Button 
-              variant="secondary" 
-              onClick={() => setIsBorrowModalOpen(true)}
-              className="w-full"
-              disabled={state.categories.length < 2}
-            >
-              🔄 Borrow
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
 
       {/* Recent Transactions */}
       {state.transactions.length > 0 && (
@@ -351,6 +331,13 @@ export default function HomePage() {
           </CardContent>
         </Card>
       )}
+
+      {/* Expandable Floating Button */}
+      <ExpandableFloatingButton
+        onAddExpense={() => setIsQuickAddOpen(true)}
+        onBorrow={() => setIsBorrowModalOpen(true)}
+        borrowDisabled={state.categories.length < 2}
+      />
 
       {/* Modals */}
       <QuickAdd isOpen={isQuickAddOpen} onClose={() => setIsQuickAddOpen(false)} />

@@ -38,7 +38,7 @@ export function QuickAdd({ isOpen, onClose }: QuickAddProps) {
         amount: '',
         category_id: state.categories.length > 0 ? state.categories[0].id : '',
         description: '',
-        account: 'Cash',
+        account: 'Bank Transfer',
         is_unplanned: false,
         date: undefined
       })
@@ -109,6 +109,7 @@ export function QuickAdd({ isOpen, onClose }: QuickAddProps) {
             <input
               id="amount"
               type="text"
+              inputMode="numeric"
               value={formatDisplayValue(formData.amount)}
               onChange={(e) => handleAmountChange(e.target.value)}
               placeholder="0.00"

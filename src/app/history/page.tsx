@@ -15,6 +15,11 @@ export default function HistoryPage() {
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null)
   const [formData, setFormData] = useState({ amount: '', description: '', category_id: '', account: '', is_unplanned: false, date: '' })
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [filters, setFilters] = useState({
+    category: '',
+    dateFrom: '',
+    dateTo: ''
+  })
   const [confirmModal, setConfirmModal] = useState<{
     isOpen: boolean
     title: string
@@ -93,12 +98,39 @@ export default function HistoryPage() {
     setFormData(prev => ({ ...prev, amount: cleanValue }))
   }
 
-  const groupedTransactions = state.transactions.reduce((acc, transaction) => {
+  // Filter transactions based on selected filters
+  const filteredTransactions = state.transactions.filter(transaction => {
+    // Category filter
+    if (filters.category && filters.category !== 'all') {
+      if (filters.category === 'unplanned') {
+        if (!transaction.is_unplanned) return false
+      } else if (filters.category === 'uncategorized') {
+        if (transaction.category_id || transaction.is_unplanned) return false
+      } else {
+        if (transaction.category_id !== filters.category) return false
+      }
+    }
+    
+    // Date range filter
+    const transactionDate = new Date(transaction.date).toDateString()
+    if (filters.dateFrom) {
+      const fromDate = new Date(filters.dateFrom).toDateString()
+      if (transactionDate < fromDate) return false
+    }
+    if (filters.dateTo) {
+      const toDate = new Date(filters.dateTo).toDateString()
+      if (transactionDate > toDate) return false
+    }
+    
+    return true
+  })
+
+  const groupedTransactions = filteredTransactions.reduce((acc, transaction) => {
     const date = new Date(transaction.date).toDateString()
     if (!acc[date]) acc[date] = []
     acc[date].push(transaction)
     return acc
-  }, {} as Record<string, typeof state.transactions>)
+  }, {} as Record<string, typeof filteredTransactions>)
 
   return (
     <div className="p-4 space-y-6">
@@ -106,12 +138,78 @@ export default function HistoryPage() {
       
       <MonthSwitcher />
 
-      {state.transactions.length === 0 ? (
+      {/* Filters */}
+      <Card>
+        <CardContent className="p-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+              <select
+                value={filters.category}
+                onChange={(e) => setFilters(prev => ({ ...prev, category: e.target.value }))}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 bg-white"
+              >
+                <option value="">All Categories</option>
+                <option value="unplanned">Unplanned Expenses</option>
+                <option value="uncategorized">Uncategorized</option>
+                {state.categories.map((category) => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">From Date</label>
+              <input
+                type="date"
+                value={filters.dateFrom}
+                onChange={(e) => setFilters(prev => ({ ...prev, dateFrom: e.target.value }))}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">To Date</label>
+              <input
+                type="date"
+                value={filters.dateTo}
+                onChange={(e) => setFilters(prev => ({ ...prev, dateTo: e.target.value }))}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+              />
+            </div>
+          </div>
+          
+          {(filters.category || filters.dateFrom || filters.dateTo) && (
+            <div className="mt-3 flex items-center justify-between">
+              <span className="text-sm text-gray-600">
+                Showing {filteredTransactions.length} of {state.transactions.length} transactions
+              </span>
+              <button
+                onClick={() => setFilters({ category: '', dateFrom: '', dateTo: '' })}
+                className="text-sm text-blue-600 hover:text-blue-800"
+              >
+                Clear Filters
+              </button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {filteredTransactions.length === 0 ? (
         <Card>
           <CardContent className="text-center py-12">
             <div className="text-6xl mb-4">📊</div>
-            <h2 className="text-xl font-semibold mb-2">No transactions yet</h2>
-            <p className="text-gray-600">Start tracking your expenses to see them here</p>
+            <h2 className="text-xl font-semibold mb-2">
+              {state.transactions.length === 0 ? 'No transactions yet' : 'No transactions found'}
+            </h2>
+            <p className="text-gray-600">
+              {state.transactions.length === 0 
+                ? 'Start tracking your expenses to see them here' 
+                : 'Try adjusting your filters to see more transactions'
+              }
+            </p>
           </CardContent>
         </Card>
       ) : (
