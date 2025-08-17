@@ -317,6 +317,7 @@ export default function PlanPage() {
               <span className="absolute left-3 top-2 text-gray-500">₦</span>
               <input
                 type="text"
+                inputMode="numeric"
                 value={formatDisplayValue(formData.amount)}
                 onChange={(e) => handleAmountChange(e.target.value)}
                 placeholder="0.00"
@@ -354,6 +355,7 @@ export default function PlanPage() {
               <span className="absolute left-3 top-2 text-gray-500">₦</span>
               <input
                 type="text"
+                inputMode="numeric"
                 value={formatDisplayValue(formData.amount)}
                 onChange={(e) => handleAmountChange(e.target.value)}
                 placeholder="0.00"
