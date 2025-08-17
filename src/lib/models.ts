@@ -58,7 +58,7 @@ export interface Transaction {
   amount: number
   description: string
   account: string
-  is_emergency: boolean
+  is_unplanned: boolean // renamed from is_emergency for better semantics
   date: string
   created_at: string
   updated_at: string
@@ -97,7 +97,8 @@ export interface QuickAddData {
   category_id: string
   description: string
   account: string
-  is_emergency: boolean
+  is_unplanned: boolean
+  date?: string // optional custom date
 }
 
 export interface BorrowData {

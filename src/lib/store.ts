@@ -206,15 +206,18 @@ export class BudgetStore {
   async addTransaction(data: QuickAddData): Promise<void> {
     if (!this.state.budget) return
 
+    // If unplanned is true, clear category_id to make it uncategorized
+    const categoryId = data.is_unplanned ? undefined : (data.category_id || undefined)
+
     const transaction: Transaction = {
       id: crypto.randomUUID(),
       budget_id: this.state.budget.id,
-      category_id: data.category_id || undefined,
+      category_id: categoryId,
       amount: parseFloat(data.amount),
       description: data.description,
       account: data.account,
-      is_emergency: data.is_emergency,
-      date: new Date().toISOString(),
+      is_unplanned: data.is_unplanned,
+      date: data.date || new Date().toISOString(),
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
       deleted: false
@@ -227,7 +230,7 @@ export class BudgetStore {
     await db.markForSync(transaction.id)
   }
 
-  async updateTransaction(id: string, updates: Partial<Pick<Transaction, 'amount' | 'description' | 'category_id' | 'account' | 'is_emergency'>>): Promise<void> {
+  async updateTransaction(id: string, updates: Partial<Pick<Transaction, 'amount' | 'description' | 'category_id' | 'account' | 'is_unplanned' | 'date'>>): Promise<void> {
     const updatedTransaction = this.state.transactions.find(tx => tx.id === id)
     if (!updatedTransaction) return
 

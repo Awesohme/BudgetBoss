@@ -2,13 +2,14 @@ interface SwitchProps {
   checked: boolean
   onChange: (checked: boolean) => void
   label?: string
+  description?: string
   className?: string
 }
 
-export function Switch({ checked, onChange, label, className = '' }: SwitchProps) {
+export function Switch({ checked, onChange, label, description, className = '' }: SwitchProps) {
   return (
-    <label className={`flex items-center cursor-pointer ${className}`}>
-      <div className="relative">
+    <label className={`flex items-start cursor-pointer ${className}`}>
+      <div className="relative mt-1">
         <input
           type="checkbox"
           checked={checked}
@@ -22,10 +23,19 @@ export function Switch({ checked, onChange, label, className = '' }: SwitchProps
           checked ? 'transform translate-x-4' : ''
         }`} />
       </div>
-      {label && (
-        <span className="ml-3 text-sm font-medium text-gray-900">
-          {label}
-        </span>
+      {(label || description) && (
+        <div className="ml-3">
+          {label && (
+            <span className="text-sm font-medium text-gray-900 block">
+              {label}
+            </span>
+          )}
+          {description && (
+            <span className="text-xs text-gray-500 block">
+              {description}
+            </span>
+          )}
+        </div>
       )}
     </label>
   )

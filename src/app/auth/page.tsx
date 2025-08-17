@@ -28,12 +28,18 @@ export default function AuthPage() {
       })
 
       if (error) {
-        // Show friendly error for common database issues
-        if (error.message.includes('Database error') || error.message.includes('saving new user')) {
-          setError('Authentication is currently unavailable. You can continue using the app offline - your data will be saved locally.')
-        } else {
-          setError(error.message)
+        // Show friendly error for common issues
+        let friendlyMessage = 'Authentication is currently unavailable. You can continue using the app offline - your data will be saved locally.'
+        
+        if (error.message.includes('Invalid API key')) {
+          friendlyMessage = 'Cloud authentication is not set up yet. The app works perfectly offline - your data is saved locally on this device.'
+        } else if (error.message.includes('Database error') || error.message.includes('saving new user')) {
+          friendlyMessage = 'Authentication database is not ready. You can continue using the app offline - your data will be saved locally.'
+        } else if (error.message.includes('Email not confirmed')) {
+          friendlyMessage = 'Please check your email and click the magic link to complete sign in.'
         }
+        
+        setError(friendlyMessage)
         return
       }
 
@@ -116,12 +122,18 @@ export default function AuthPage() {
             </ul>
           </div>
 
-          {error && error.includes('offline') && (
-            <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-              <h4 className="text-sm font-medium text-yellow-900 mb-1">📱 Offline Mode Available</h4>
-              <p className="text-xs text-yellow-800">
+          {error && (error.includes('offline') || error.includes('not set up') || error.includes('not ready')) && (
+            <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <h4 className="text-sm font-medium text-blue-900 mb-2">📱 Offline Mode Available</h4>
+              <p className="text-xs text-blue-800 mb-2">
                 Your budgets will be saved locally on this device. You can set up cloud sync later.
               </p>
+              <button
+                onClick={() => router.push('/')}
+                className="text-xs bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition-colors"
+              >
+                Continue to App →
+              </button>
             </div>
           )}
         </CardContent>

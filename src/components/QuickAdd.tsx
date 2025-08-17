@@ -19,8 +19,10 @@ export function QuickAdd({ isOpen, onClose }: QuickAddProps) {
     category_id: '',
     description: '',
     account: 'Cash',
-    is_emergency: false
+    is_unplanned: false,
+    date: undefined
   })
+  const [showDateTime, setShowDateTime] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
 
@@ -37,8 +39,10 @@ export function QuickAdd({ isOpen, onClose }: QuickAddProps) {
         category_id: state.categories.length > 0 ? state.categories[0].id : '',
         description: '',
         account: 'Cash',
-        is_emergency: false
+        is_unplanned: false,
+        date: undefined
       })
+      setShowDateTime(false)
       setError('')
     }
   }, [isOpen, state.categories])
@@ -122,7 +126,10 @@ export function QuickAdd({ isOpen, onClose }: QuickAddProps) {
             id="category"
             value={formData.category_id}
             onChange={(e) => setFormData(prev => ({ ...prev, category_id: e.target.value }))}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 bg-white"
+            disabled={formData.is_unplanned}
+            className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 bg-white ${
+              formData.is_unplanned ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
           >
             <option value="">No Category</option>
             {state.categories.map((category) => (
@@ -131,6 +138,11 @@ export function QuickAdd({ isOpen, onClose }: QuickAddProps) {
               </option>
             ))}
           </select>
+          {formData.is_unplanned && (
+            <p className="mt-1 text-xs text-orange-600">
+              Unplanned expenses are not tied to any category
+            </p>
+          )}
         </div>
 
         <div>
@@ -170,11 +182,49 @@ export function QuickAdd({ isOpen, onClose }: QuickAddProps) {
           </select>
         </div>
 
+        {/* Date & Time Section */}
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <label className="block text-sm font-medium text-gray-700">
+              Date & Time
+            </label>
+            <button
+              type="button"
+              onClick={() => setShowDateTime(!showDateTime)}
+              className="text-sm text-blue-600 hover:text-blue-800 flex items-center space-x-1"
+            >
+              <span>{showDateTime ? 'Use current time' : 'Set custom date/time'}</span>
+              <span className="text-xs">⏰</span>
+            </button>
+          </div>
+          
+          {showDateTime ? (
+            <input
+              type="datetime-local"
+              value={formData.date ? new Date(formData.date).toISOString().slice(0, 16) : ''}
+              onChange={(e) => setFormData(prev => ({ 
+                ...prev, 
+                date: e.target.value ? new Date(e.target.value).toISOString() : undefined 
+              }))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+            />
+          ) : (
+            <div className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-600 text-sm">
+              📅 {new Date().toLocaleDateString()} at {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            </div>
+          )}
+        </div>
+
         <div className="flex items-center">
           <Switch
-            checked={formData.is_emergency}
-            onChange={(checked) => setFormData(prev => ({ ...prev, is_emergency: checked }))}
-            label="Emergency expense"
+            checked={formData.is_unplanned}
+            onChange={(checked) => setFormData(prev => ({ 
+              ...prev, 
+              is_unplanned: checked,
+              category_id: checked ? '' : prev.category_id // Clear category if unplanned
+            }))}
+            label="Unplanned expense"
+            description="Not tied to any budget category"
           />
         </div>
 

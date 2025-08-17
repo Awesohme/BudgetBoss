@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS transactions (
     amount DECIMAL(12,2) NOT NULL CHECK (amount > 0),
     description TEXT NOT NULL CHECK (LENGTH(description) >= 3),
     account TEXT NOT NULL DEFAULT 'Cash',
-    is_emergency BOOLEAN DEFAULT FALSE,
+    is_unplanned BOOLEAN DEFAULT FALSE, -- renamed from is_emergency for better semantics
     date TIMESTAMPTZ DEFAULT NOW(),
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW(),

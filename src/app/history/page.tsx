@@ -13,7 +13,7 @@ import type { BudgetState, Transaction } from '@/lib/models'
 export default function HistoryPage() {
   const [state, setState] = useState<BudgetState>(store.getState())
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null)
-  const [formData, setFormData] = useState({ amount: '', description: '', category_id: '', account: '', is_emergency: false })
+  const [formData, setFormData] = useState({ amount: '', description: '', category_id: '', account: '', is_unplanned: false, date: '' })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [confirmModal, setConfirmModal] = useState<{
     isOpen: boolean
@@ -40,7 +40,8 @@ export default function HistoryPage() {
       description: transaction.description,
       category_id: transaction.category_id || '',
       account: transaction.account,
-      is_emergency: transaction.is_emergency
+      is_unplanned: transaction.is_unplanned,
+      date: new Date(transaction.date).toISOString().slice(0, 16)
     })
   }
 
@@ -50,12 +51,16 @@ export default function HistoryPage() {
     
     setIsSubmitting(true)
     try {
+      // If unplanned is true, clear category_id
+      const categoryId = formData.is_unplanned ? undefined : (formData.category_id || undefined)
+      
       await store.updateTransaction(editingTransaction.id, {
         amount: parseFloat(formData.amount),
         description: formData.description,
-        category_id: formData.category_id || undefined,
+        category_id: categoryId,
         account: formData.account,
-        is_emergency: formData.is_emergency
+        is_unplanned: formData.is_unplanned,
+        date: new Date(formData.date).toISOString()
       })
       setEditingTransaction(null)
     } catch (error) {
@@ -139,14 +144,14 @@ export default function HistoryPage() {
                                 />
                               )}
                               <span className="font-medium text-gray-900">{transaction.description}</span>
-                              {transaction.is_emergency && (
-                                <span className="text-xs bg-red-100 text-red-800 px-2 py-1 rounded">
-                                  Emergency
+                              {transaction.is_unplanned && (
+                                <span className="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded">
+                                  Unplanned
                                 </span>
                               )}
                             </div>
                             <p className="text-sm text-gray-600 mt-1">
-                              {category?.name || 'No Category'} • {transaction.account}
+                              {transaction.is_unplanned ? 'Unplanned Expense' : (category?.name || 'No Category')} • {transaction.account}
                             </p>
                           </div>
                           <div className="flex items-center space-x-2">
@@ -237,7 +242,10 @@ export default function HistoryPage() {
             <select
               value={formData.category_id}
               onChange={(e) => setFormData(prev => ({ ...prev, category_id: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 bg-white"
+              disabled={formData.is_unplanned}
+              className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 bg-white ${
+                formData.is_unplanned ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
             >
               <option value="">No Category</option>
               {state.categories.map((category) => (
@@ -246,6 +254,11 @@ export default function HistoryPage() {
                 </option>
               ))}
             </select>
+            {formData.is_unplanned && (
+              <p className="mt-1 text-xs text-orange-600">
+                Unplanned expenses are not tied to any category
+              </p>
+            )}
           </div>
 
           <div>
@@ -260,15 +273,29 @@ export default function HistoryPage() {
             </select>
           </div>
 
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Date & Time</label>
+            <input
+              type="datetime-local"
+              value={formData.date}
+              onChange={(e) => setFormData(prev => ({ ...prev, date: e.target.value }))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 bg-white"
+            />
+          </div>
+
           <div className="flex items-center">
             <input
               type="checkbox"
-              id="is_emergency"
-              checked={formData.is_emergency}
-              onChange={(e) => setFormData(prev => ({ ...prev, is_emergency: e.target.checked }))}
+              id="is_unplanned"
+              checked={formData.is_unplanned}
+              onChange={(e) => setFormData(prev => ({ 
+                ...prev, 
+                is_unplanned: e.target.checked,
+                category_id: e.target.checked ? '' : prev.category_id
+              }))}
               className="mr-2"
             />
-            <label htmlFor="is_emergency" className="text-sm text-gray-700">Emergency expense</label>
+            <label htmlFor="is_unplanned" className="text-sm text-gray-700">Unplanned expense</label>
           </div>
 
           <div className="flex space-x-3 pt-4 border-t border-gray-200">

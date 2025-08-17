@@ -198,8 +198,8 @@ export function CategoryDetailModal({ isOpen, onClose, category, transactions }:
                     <p className="text-sm font-medium text-gray-900">{transaction.description}</p>
                     <p className="text-xs text-gray-600">
                       {new Date(transaction.date).toLocaleDateString()} • {transaction.account}
-                      {transaction.is_emergency && (
-                        <span className="ml-1 text-red-600">• Emergency</span>
+                      {transaction.is_unplanned && (
+                        <span className="ml-1 text-orange-600">• Unplanned</span>
                       )}
                     </p>
                   </div>
