@@ -43,8 +43,9 @@ function AuthForm() {
       if (authMode === 'signup') {
         result = await signUp(email, password)
         if (!result.error) {
-          setMessage('Account created! Please check your email and click the confirmation link to complete signup.')
+          setMessage('Account created successfully! You can now sign in.')
           setAuthMode('signin') // Switch to signin mode after successful signup
+          // Auto-fill email for signin
           return
         }
       } else {

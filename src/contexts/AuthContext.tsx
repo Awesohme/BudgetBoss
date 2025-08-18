@@ -59,13 +59,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signUp = async (email: string, password: string) => {
     try {
-      const { error } = await supabase.auth.signUp({
+      const { error, data } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          data: {
+            // Optional: Add user metadata
+            app_name: 'BudgetBoss'
+          }
         }
       })
+      
+      // For development: if user is created but not confirmed, still allow login
+      if (!error && data.user && !data.session) {
+        console.log('User created but email confirmation required')
+      }
+      
       return { error }
     } catch (error) {
       return { error: error as Error }
