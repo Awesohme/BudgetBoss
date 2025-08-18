@@ -414,64 +414,6 @@ export class BudgetStore {
     await this.loadMonth(this.currentMonth)
   }
 
-  // Local backup operations
-  async exportData(): Promise<string> {
-    try {
-      // Get all data from IndexedDB
-      const allData = await db.exportAll()
-      
-      // Create backup object with metadata
-      const backup = {
-        version: '1.0',
-        exportDate: new Date().toISOString(),
-        app: 'BudgetBoss',
-        data: allData
-      }
-      
-      return JSON.stringify(backup, null, 2)
-    } catch (error) {
-      console.error('Export failed:', error)
-      throw new Error('Failed to export data')
-    }
-  }
-
-  async importData(jsonData: string): Promise<void> {
-    try {
-      const backup = JSON.parse(jsonData)
-      
-      // Validate backup structure
-      if (!backup.data || !backup.version || backup.app !== 'BudgetBoss') {
-        throw new Error('Invalid backup file format')
-      }
-      
-      // Import data to IndexedDB
-      await db.importAll(backup.data)
-      
-      // Reload current month
-      await this.loadMonth(this.currentMonth)
-      
-      console.log('Data imported successfully from backup dated:', backup.exportDate)
-    } catch (error) {
-      console.error('Import failed:', error)
-      throw new Error('Failed to import data: ' + (error as Error).message)
-    }
-  }
-
-  downloadBackup(): void {
-    this.exportData().then(data => {
-      const blob = new Blob([data], { type: 'application/json' })
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = `budgetboss-backup-${new Date().toISOString().split('T')[0]}.json`
-      document.body.appendChild(a)
-      a.click()
-      document.body.removeChild(a)
-      URL.revokeObjectURL(url)
-    }).catch(error => {
-      alert('Export failed: ' + error.message)
-    })
-  }
 }
 
 export const store = new BudgetStore()
