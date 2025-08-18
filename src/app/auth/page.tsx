@@ -31,6 +31,8 @@ export default function AuthPage() {
         console.error('Supabase auth error:', error)
         if (error.message?.includes('email_address_invalid')) {
           setError('This email address is not allowed. Please use a valid email address or continue using the app offline.')
+        } else if (error.message?.includes('rate_limit') || error.message?.includes('too many requests')) {
+          setError('Please wait a moment before requesting another magic link. Check your email for the previous link or try again in a minute.')
         } else {
           setError('Unable to send magic link. You can continue using the app offline - your data will be saved locally.')
         }
