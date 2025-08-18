@@ -39,7 +39,9 @@ export default function HomePage() {
       try {
         // Check auth state
         const { data: { session } } = await supabase.auth.getSession()
+        console.log('Auth session check:', session?.user?.email || 'No session')
         if (session?.user) {
+          console.log('Setting user:', session.user.email)
           setUser(session.user)
           
           // Ensure budget exists and load data
