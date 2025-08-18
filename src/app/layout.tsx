@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { BottomNav } from "@/components/BottomNav";
 import { PWAUpdateManager } from "@/components/PWAUpdateManager";
+import { AuthProvider } from "@/contexts/AuthContext";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -29,11 +30,13 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" />
       </head>
       <body className={`${inter.className} antialiased bg-gray-50`}>
-        <PWAUpdateManager />
-        <main className="min-h-screen pb-16">
-          {children}
-        </main>
-        <BottomNav />
+        <AuthProvider>
+          <PWAUpdateManager />
+          <main className="min-h-screen pb-16">
+            {children}
+          </main>
+          <BottomNav />
+        </AuthProvider>
         
         <script
           dangerouslySetInnerHTML={{
