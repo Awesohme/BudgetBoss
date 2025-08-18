@@ -1,17 +1,25 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Card, CardHeader, CardContent, CardTitle } from '@/components/Card'
 import { Button } from '@/components/Button'
 import { supabase } from '@/lib/supabase'
 
 export default function AuthPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [email, setEmail] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
+
+  useEffect(() => {
+    const errorFromCallback = searchParams.get('error')
+    if (errorFromCallback) {
+      setError('Authentication failed. Please try signing in again.')
+    }
+  }, [searchParams])
 
   const handleMagicLink = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -23,7 +31,7 @@ export default function AuthPage() {
       const { error } = await supabase.auth.signInWithOtp({
         email,
         options: {
-          emailRedirectTo: `${window.location.origin}`
+          emailRedirectTo: `${window.location.origin}/auth/callback`
         }
       })
 
