@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { Card, CardHeader, CardContent, CardTitle } from '@/components/Card'
+import { Button } from '@/components/Button'
 import { MonthSwitcher } from '@/components/MonthSwitcher'
 import { Progress } from '@/components/Progress'
 import { store } from '@/lib/store'
@@ -10,6 +11,7 @@ import type { BudgetState } from '@/lib/models'
 
 export default function InsightsPage() {
   const [state, setState] = useState<BudgetState>(store.getState())
+  const [isExporting, setIsExporting] = useState(false)
 
   useEffect(() => {
     const unsubscribe = store.subscribe(setState)
@@ -23,11 +25,59 @@ export default function InsightsPage() {
   const overspentCategories = store.getOverspentCategories()
   const underBudgetCategories = store.getUnderBudgetCategories()
 
+  const handleExcelExport = async () => {
+    setIsExporting(true)
+    try {
+      await store.exportToExcel()
+      // Success message could be added here if desired
+    } catch (error) {
+      console.error('Export failed:', error)
+      alert('Export failed. Please try again.')
+    } finally {
+      setIsExporting(false)
+    }
+  }
+
   return (
     <div className="p-4 space-y-6">
-      <h1 className="text-2xl font-bold text-white bg-gray-800 p-4 rounded-lg">Budget Insights</h1>
+      <div className="flex justify-between items-center bg-gray-800 p-4 rounded-lg">
+        <h1 className="text-2xl font-bold text-white">Budget Insights</h1>
+        <Button
+          onClick={handleExcelExport}
+          disabled={isExporting}
+          loading={isExporting}
+          variant="secondary"
+          icon={<span>📊</span>}
+          className="bg-green-600 text-white hover:bg-green-700"
+        >
+          {isExporting ? 'Exporting...' : 'Export Excel'}
+        </Button>
+      </div>
       
       <MonthSwitcher />
+
+      {/* Excel Export Info */}
+      <Card variant="elevated" className="bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200">
+        <CardContent className="p-4">
+          <div className="flex items-start space-x-3">
+            <span className="text-2xl">📊</span>
+            <div>
+              <h3 className="font-semibold text-gray-900 mb-2">Excel Export Available</h3>
+              <p className="text-sm text-gray-700 mb-3">
+                Export all your budget data across all months into a comprehensive Excel file with 6 detailed sheets:
+              </p>
+              <div className="grid grid-cols-2 gap-2 text-xs text-gray-600">
+                <div>• Summary Overview</div>
+                <div>• Monthly Breakdown</div>
+                <div>• All Transactions</div>
+                <div>• Category Performance</div>
+                <div>• Income Analysis</div>
+                <div>• Unplanned Expenses</div>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Category Health */}
       <Card>
