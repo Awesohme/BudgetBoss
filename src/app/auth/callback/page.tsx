@@ -16,7 +16,6 @@ export default function AuthCallback() {
         const refreshToken = hashParams.get('refresh_token')
         
         if (accessToken && refreshToken) {
-          console.log('Setting session with tokens from URL')
           // Set the session from URL tokens
           const { data, error } = await supabase.auth.setSession({
             access_token: accessToken,
@@ -30,7 +29,6 @@ export default function AuthCallback() {
           }
           
           if (data.session) {
-            console.log('Session set successfully, user:', data.session.user.email)
             // Successfully authenticated, redirect to home
             router.push('/')
             return
