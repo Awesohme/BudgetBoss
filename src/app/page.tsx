@@ -176,19 +176,19 @@ export default function HomePage() {
               <div className="text-center p-3 bg-green-50 rounded-xl border border-green-100">
                 <p className="text-xs font-medium text-green-700 uppercase tracking-wide">Income</p>
                 <p className={`${getAmountTextSize(totalIncome)} text-green-600 mt-1`}>
-                  {formatSmartCurrency(totalIncome, totalIncome > 100000)}
+                  {formatSmartCurrency(totalIncome, totalIncome > 1000)}
                 </p>
               </div>
               <div className="text-center p-3 bg-blue-50 rounded-xl border border-blue-100">
                 <p className="text-xs font-medium text-blue-700 uppercase tracking-wide">Budgeted</p>
                 <p className={`${getAmountTextSize(totalBudgeted)} text-blue-600 mt-1`}>
-                  {formatSmartCurrency(totalBudgeted, totalBudgeted > 100000)}
+                  {formatSmartCurrency(totalBudgeted, totalBudgeted > 1000)}
                 </p>
               </div>
               <div className="text-center p-3 bg-gray-50 rounded-xl border border-gray-200">
                 <p className="text-xs font-medium text-gray-700 uppercase tracking-wide">Spent</p>
                 <p className={`${getAmountTextSize(totalSpent)} text-gray-800 mt-1`}>
-                  {formatSmartCurrency(totalSpent, totalSpent > 100000)}
+                  {formatSmartCurrency(totalSpent, totalSpent > 1000)}
                 </p>
               </div>
             </div>
@@ -236,7 +236,7 @@ export default function HomePage() {
               )}
               
               <div className="flex justify-between items-center text-sm text-gray-600 border-t border-gray-100 pt-4">
-                <span className="font-medium">Budget Allocation Left</span>
+                <span className="font-medium">Income Allocation Left</span>
                 <span className={`font-semibold ${actualLeft >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                   {formatCurrency(actualLeft)}
                 </span>

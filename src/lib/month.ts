@@ -79,7 +79,7 @@ export const formatSmartCurrency = (amount: number, compact = false): string => 
 export const getAmountTextSize = (amount: number): string => {
   const formatted = formatCurrency(amount)
   
-  if (formatted.length > 12) return 'text-sm font-bold' // Very long amounts
-  if (formatted.length > 9) return 'text-base font-bold'   // Long amounts
-  return 'text-xl font-bold'  // Normal amounts
+  if (formatted.length > 12) return 'text-xs font-bold' // Very long amounts (reduced by 1px)
+  if (formatted.length > 9) return 'text-sm font-bold'   // Long amounts (reduced by 1px)
+  return 'text-lg font-bold'  // Normal amounts (reduced by 1px)
 }

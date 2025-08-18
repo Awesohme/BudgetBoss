@@ -29,7 +29,11 @@ export default function AuthPage() {
 
       if (error) {
         console.error('Supabase auth error:', error)
-        setError('Unable to send magic link. You can continue using the app offline - your data will be saved locally.')
+        if (error.message?.includes('email_address_invalid')) {
+          setError('This email address is not allowed. Please use a valid email address or continue using the app offline.')
+        } else {
+          setError('Unable to send magic link. You can continue using the app offline - your data will be saved locally.')
+        }
         return
       }
 
