@@ -2,7 +2,15 @@
 
 A modern, offline-first budgeting PWA with cloud sync and partner sharing capabilities.
 
-## 🚀 Latest Updates (v4.0)
+## 🚀 Latest Updates (v4.1)
+
+### ✅ Enhanced Authentication System
+- **Email/Password Authentication** - Traditional login alongside magic links
+- **Instant Account Creation** - No email verification required for immediate access
+- **Permanent Session Management** - Users stay logged in indefinitely (perfect for PWA)
+- **AuthContext Integration** - Centralized authentication state management
+- **Dual Auth Options** - Choose between email/password or magic link authentication
+- **Auto-redirect Protection** - Authenticated users automatically redirected from auth page
 
 ### ✅ Modern UI Overhaul
 - **Complete design system** with modern CSS variables and component variants
@@ -13,11 +21,11 @@ A modern, offline-first budgeting PWA with cloud sync and partner sharing capabi
 - **Enhanced mobile experience** with proper overflow handling
 
 ### ✅ Authentication & Cloud Sync
-- **Magic link authentication** with Supabase integration
+- **Dual authentication methods** - Email/password + Magic link options
 - **Production-ready callback system** with proper URL handling
 - **Rate limiting protection** with user-friendly error messages
 - **Environment variable security** properly configured for deployment
-- **Session persistence** across app restarts and PWA installs
+- **Permanent session persistence** with localStorage and auto-refresh tokens
 
 ### ✅ Core Features
 
@@ -126,19 +134,40 @@ npm run lint         # Code linting (if configured)
 npm run type-check   # TypeScript type checking
 ```
 
+## 🔐 Authentication Details
+
+### Email/Password Flow
+1. **Sign Up**: Users enter email + password → Account created instantly
+2. **Sign In**: Users enter credentials → Permanent session established
+3. **Session Management**: Auto-refresh tokens keep users logged in indefinitely
+4. **PWA Compatibility**: Perfect for offline-first usage patterns
+
+### Technical Implementation
+- **AuthContext**: `src/contexts/AuthContext.tsx` - Centralized auth state
+- **Supabase Config**: Custom storage key `budgetboss-auth-token`
+- **Session Storage**: localStorage with `persistSession: true`
+- **Auto-refresh**: Tokens refresh automatically to maintain permanent sessions
+
+### Security Features
+- **Input Validation**: Password minimum 6 characters
+- **Error Handling**: User-friendly messages for all auth states
+- **Session Protection**: Secure token storage and refresh mechanisms
+- **Route Protection**: Auto-redirect for authenticated users
+
 ## 📝 Latest Session Summary
 
 **Completed in this session:**
-1. ✅ **Modern UI overhaul** - Complete design system with dark mode
-2. ✅ **Authentication debugging** - Resolved API key and rate limiting issues  
-3. ✅ **Mobile responsiveness** - Fixed overflow and text sizing problems
-4. ✅ **Production deployment** - Working Vercel deployment with proper configs
-5. ✅ **Security audit** - Zero vulnerabilities, clean codebase
-6. ✅ **Documentation update** - Comprehensive CLAUDE.md with latest features
+1. ✅ **Email/Password Authentication** - Full implementation with signup/signin
+2. ✅ **Permanent Session Management** - Users stay logged in indefinitely
+3. ✅ **AuthContext Integration** - Centralized authentication state management
+4. ✅ **Instant Account Creation** - No email verification required
+5. ✅ **Dual Auth Options** - Email/password + Magic link support
+6. ✅ **Security Audit** - Zero vulnerabilities, production-ready code
+7. ✅ **Documentation Update** - Complete feature documentation
 
 **Current Status:** 
-- 🟢 **Production Ready** - Fully deployed and functional
+- 🟢 **Production Ready** - Fully deployed with dual authentication
 - 🟢 **Secure** - No security vulnerabilities detected
-- 🟢 **Modern UI** - Contemporary design with dark mode support
-- 🟢 **Authentication** - Working magic link system with cloud sync
-- 🟢 **Offline Capable** - Full PWA functionality maintained
+- 🟢 **PWA Optimized** - Permanent sessions perfect for offline usage
+- 🟢 **User Friendly** - Instant signup without email verification barriers
+- 🟢 **Modern Architecture** - Clean AuthContext pattern with TypeScript

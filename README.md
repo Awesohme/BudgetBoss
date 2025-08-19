@@ -1,36 +1,148 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 💰 BudgetBoss
 
-## Getting Started
+> A modern, offline-first budgeting PWA with cloud sync and permanent session authentication
 
-First, run the development server:
+![Version](https://img.shields.io/badge/version-4.1-blue.svg)
+![Next.js](https://img.shields.io/badge/Next.js-15-black.svg)
+![Supabase](https://img.shields.io/badge/Supabase-Auth-green.svg)
+![PWA](https://img.shields.io/badge/PWA-Ready-purple.svg)
+
+## ✨ Features
+
+### 🔐 **Dual Authentication System**
+- **Email/Password Login** - Traditional authentication with permanent sessions
+- **Magic Link Authentication** - Passwordless login option
+- **Instant Account Creation** - No email verification barriers
+- **Permanent Sessions** - Stay logged in indefinitely (perfect for PWA usage)
+
+### 💰 **Smart Budget Management**
+- Monthly budget planning with income + category system
+- Transaction tracking with enforced descriptions
+- Category borrowing for flexible budget adjustments
+- Nigerian Naira (₦) currency support with smart formatting
+
+### 📱 **Progressive Web App**
+- Offline-first with IndexedDB storage
+- Service worker for caching and offline functionality
+- Native-like installation experience
+- Works seamlessly when saved to home screen
+
+### 📊 **Analytics & Insights**
+- Category health monitoring (80% warnings, overspent alerts)
+- Most/least frequent spending analysis
+- Borrowed/lent tracking with visual summaries
+- Performance metrics and savings analysis
+
+## 🚀 Quick Start
 
 ```bash
+# Clone the repository
+git clone https://github.com/Awesohme/BudgetBoss.git
+cd BudgetBoss
+
+# Install dependencies
+npm install
+
+# Set up environment variables
+cp .env.example .env.local
+# Add your Supabase credentials
+
+# Run development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to see BudgetBoss in action!
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🔧 Environment Setup
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Create a `.env.local` file with your Supabase credentials:
 
-## Learn More
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
 
-To learn more about Next.js, take a look at the following resources:
+## 🏗️ Tech Stack
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Frontend**: Next.js 15 + TypeScript + Tailwind CSS
+- **Authentication**: Supabase Auth with dual methods
+- **Database**: Supabase PostgreSQL with Row Level Security
+- **Storage**: IndexedDB (idb-keyval) for offline-first experience
+- **PWA**: Service Worker + Web App Manifest
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📱 Authentication Flow
 
-## Deploy on Vercel
+### Email/Password Authentication
+1. **Sign Up** → Enter email + password → Account created instantly
+2. **Sign In** → Enter credentials → Permanent session established
+3. **Stay Logged In** → Sessions persist across app restarts and PWA installs
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Magic Link Authentication
+1. **Enter Email** → Receive secure link → Click to authenticate
+2. **Instant Access** → Automatic login with session persistence
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🛠️ Development Commands
+
+```bash
+npm run dev          # Start development server
+npm run build        # Build for production
+npm run start        # Start production server
+npm run lint         # Code linting
+npm audit            # Security vulnerability check
+```
+
+## 🔒 Security Features
+
+- **Zero npm vulnerabilities** - Regular security audits
+- **Secure session management** - Permanent localStorage sessions
+- **Input validation** - Password requirements and data validation
+- **Route protection** - Auto-redirect for authenticated users
+- **HTTPS enforcement** - Secure communication protocols
+
+## 📦 Key Files
+
+```
+src/
+├── app/                    # Next.js 15 App Router pages
+│   ├── auth/              # Authentication pages
+│   ├── plan/              # Budget planning
+│   ├── track/             # Expense tracking
+│   ├── history/           # Transaction history
+│   └── insights/          # Analytics dashboard
+├── components/            # Reusable UI components
+├── contexts/
+│   └── AuthContext.tsx   # Authentication state management
+├── lib/
+│   ├── supabase.ts       # Supabase client configuration
+│   ├── store.ts          # Application state management
+│   └── db.ts             # IndexedDB operations
+└── hooks/                # Custom React hooks
+```
+
+## 🌟 Production Deployment
+
+- **Live Demo**: [https://budget-boss-delta.vercel.app](https://budget-boss-delta.vercel.app)
+- **Vercel Deployment**: Optimized for production with proper environment variables
+- **PWA Support**: Full offline functionality and installable experience
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- Built with [Next.js](https://nextjs.org) and [Supabase](https://supabase.com)
+- UI components styled with [Tailwind CSS](https://tailwindcss.com)
+- PWA functionality powered by custom service workers
+
+---
+
+**BudgetBoss** - Take control of your finances with smart, offline-first budgeting! 💪
