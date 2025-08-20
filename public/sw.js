@@ -1,4 +1,4 @@
-const CACHE_NAME = 'budgetboss-v3'
+const CACHE_NAME = 'budgetboss-v4'
 const urlsToCache = [
   '/',
   '/plan',
@@ -34,10 +34,27 @@ self.addEventListener('activate', (event) => {
   )
 })
 
-// Handle messages from the app (for update notifications)
+// Handle messages from the app (for update notifications and cache clearing)
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting()
+  }
+  
+  if (event.data && event.data.type === 'CLEAR_CACHE') {
+    event.waitUntil(
+      caches.keys().then((cacheNames) => {
+        return Promise.all(
+          cacheNames.map((cacheName) => caches.delete(cacheName))
+        )
+      }).then(() => {
+        // Notify the app that cache is cleared
+        self.clients.matchAll().then(clients => {
+          clients.forEach(client => {
+            client.postMessage({ type: 'CACHE_CLEARED' })
+          })
+        })
+      })
+    )
   }
 })
 

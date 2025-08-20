@@ -72,6 +72,32 @@ export default function HomePage() {
     return () => subscription.unsubscribe()
   }, [])
 
+  const handleForceRefresh = async () => {
+    try {
+      // Clear all caches
+      if ('caches' in window) {
+        const cacheNames = await caches.keys()
+        await Promise.all(
+          cacheNames.map(name => caches.delete(name))
+        )
+      }
+      
+      // Unregister service worker
+      if ('serviceWorker' in navigator) {
+        const registrations = await navigator.serviceWorker.getRegistrations()
+        await Promise.all(
+          registrations.map(registration => registration.unregister())
+        )
+      }
+      
+      // Force hard reload
+      window.location.reload()
+    } catch (error) {
+      console.error('Cache clear failed, doing normal reload:', error)
+      window.location.reload()
+    }
+  }
+
   const handleSync = async () => {
     if (!user) return
     
@@ -135,7 +161,7 @@ export default function HomePage() {
             </div>
             <p 
               className="text-indigo-100 mt-1 cursor-pointer hover:text-white transition-colors"
-              onClick={() => window.location.reload()}
+              onClick={handleForceRefresh}
             >
               Tap to refresh
             </p>
