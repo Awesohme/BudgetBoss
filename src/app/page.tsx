@@ -23,6 +23,7 @@ export default function HomePage() {
   const [isBorrowModalOpen, setIsBorrowModalOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [isSyncing, setIsSyncing] = useState(false)
+  const [syncSuccess, setSyncSuccess] = useState(false)
 
   useEffect(() => {
     const unsubscribe = store.subscribe(setState)
@@ -75,10 +76,15 @@ export default function HomePage() {
     if (!user) return
     
     setIsSyncing(true)
+    setSyncSuccess(false)
     try {
       await store.syncWithRemote(user.id)
       // Force reload to show synced data
       await store.loadMonth(store.getCurrentMonth())
+      
+      // Show success animation
+      setSyncSuccess(true)
+      setTimeout(() => setSyncSuccess(false), 2000) // Hide after 2 seconds
     } catch (error) {
       console.error('Sync failed:', error)
       // Show user-friendly error message but don't break the app
@@ -143,10 +149,27 @@ export default function HomePage() {
                 onClick={handleSync}
                 disabled={isSyncing}
                 loading={isSyncing}
-                icon={!isSyncing && <span>☁️</span>}
-                className="bg-white/10 text-white border-white/20 hover:bg-white/20"
+                icon={syncSuccess ? (
+                  <span className="inline-block animate-bounce text-green-400">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="animate-pulse">
+                      <path 
+                        d="M20 6L9 17l-5-5" 
+                        stroke="currentColor" 
+                        strokeWidth="3" 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round"
+                        className="animate-[draw_0.5s_ease-in-out_forwards]"
+                      />
+                    </svg>
+                  </span>
+                ) : (!isSyncing && <span>☁️</span>)}
+                className={`transition-all duration-300 ${
+                  syncSuccess 
+                    ? 'bg-green-500/20 text-green-100 border-green-400/30 hover:bg-green-500/30' 
+                    : 'bg-white/10 text-white border-white/20 hover:bg-white/20'
+                }`}
               >
-                {isSyncing ? 'Syncing...' : 'Sync'}
+                {isSyncing ? 'Syncing...' : syncSuccess ? 'Synced!' : 'Sync'}
               </Button>
             )}
             {!user && (

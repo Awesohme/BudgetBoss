@@ -154,9 +154,21 @@ npm run type-check   # TypeScript type checking
 - **Session Protection**: Secure token storage and refresh mechanisms
 - **Route Protection**: Auto-redirect for authenticated users
 
-## 📝 Latest Session Summary
+## 🔧 Recent Updates (August 2025)
 
-**Completed in this session:**
+### ✅ Budget Calculation Fix
+- **Fixed Budget Remaining Logic** - Corrected calculation from `totalIncome - totalSpent` to `totalBudgeted - totalSpent`
+- **Accurate Budget Tracking** - Now properly shows remaining budget from allocated amounts
+- **UI Consistency** - Budget overview now displays correct financial metrics
+
+### ✅ Header UX Improvements  
+- **Universal Refresh Action** - Replaced conditional "Welcome back!" with always-available "Tap to refresh"
+- **Consistent Interaction** - Refresh functionality now available for both online/offline states
+- **Simplified UI Logic** - Removed conditional text display for cleaner user experience
+
+## 📝 Previous Session Summary
+
+**Completed in authentication session:**
 1. ✅ **Email/Password Authentication** - Full implementation with signup/signin
 2. ✅ **Permanent Session Management** - Users stay logged in indefinitely
 3. ✅ **AuthContext Integration** - Centralized authentication state management
@@ -171,3 +183,4 @@ npm run type-check   # TypeScript type checking
 - 🟢 **PWA Optimized** - Permanent sessions perfect for offline usage
 - 🟢 **User Friendly** - Instant signup without email verification barriers
 - 🟢 **Modern Architecture** - Clean AuthContext pattern with TypeScript
+- 🟢 **Accurate Calculations** - Budget remaining now shows correct values
