@@ -403,9 +403,9 @@ export class BudgetStore {
   }
 
   getBudgetRemaining(): number {
-    const totalIncome = this.getTotalIncome()
+    const totalBudgeted = this.getTotalBudgeted()
     const totalSpent = this.getTotalSpent()
-    return totalIncome - totalSpent
+    return totalBudgeted - totalSpent
   }
 
   // Sync operations

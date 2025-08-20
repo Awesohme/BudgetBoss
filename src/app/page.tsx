@@ -128,10 +128,10 @@ export default function HomePage() {
               </span>
             </div>
             <p 
-              className={`text-indigo-100 mt-1 ${!user ? 'cursor-pointer hover:text-white transition-colors' : ''}`}
-              onClick={!user ? () => window.location.reload() : undefined}
+              className="text-indigo-100 mt-1 cursor-pointer hover:text-white transition-colors"
+              onClick={() => window.location.reload()}
             >
-              {user ? `Welcome back!` : 'Tap to refresh'}
+              Tap to refresh
             </p>
           </div>
           
