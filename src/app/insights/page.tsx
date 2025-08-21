@@ -7,6 +7,7 @@ import { MonthSwitcher } from '@/components/MonthSwitcher'
 import { Progress } from '@/components/Progress'
 import { store } from '@/lib/store'
 import { formatCurrency } from '@/lib/month'
+import { BarChart3, AlertTriangle, DollarSign, TrendingUp } from 'lucide-react'
 import type { BudgetState } from '@/lib/models'
 
 export default function InsightsPage() {
@@ -20,7 +21,7 @@ export default function InsightsPage() {
   }, [])
 
   const categoriesWithSpent = store.getCategoriesWithSpent()
-  const frequentCategories = store.getFrequentCategories()
+  const expensiveCategories = store.getMostExpensiveCategories()
   const borrowedLent = store.getBorrowedLentSummary()
   const overspentCategories = store.getOverspentCategories()
   const underBudgetCategories = store.getUnderBudgetCategories()
@@ -47,7 +48,7 @@ export default function InsightsPage() {
           disabled={isExporting}
           loading={isExporting}
           variant="secondary"
-          icon={<span>📊</span>}
+          icon={<BarChart3 className="h-4 w-4" />}
           className="bg-green-600 text-white hover:bg-green-700"
         >
           {isExporting ? 'Exporting...' : 'Export Excel'}
@@ -60,7 +61,7 @@ export default function InsightsPage() {
       <Card variant="elevated" className="bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200">
         <CardContent className="p-4">
           <div className="flex items-start space-x-3">
-            <span className="text-2xl">📊</span>
+            <BarChart3 className="h-6 w-6 text-blue-600 mt-1" />
             <div>
               <h3 className="font-semibold text-gray-900 mb-2">Excel Export Available</h3>
               <p className="text-sm text-gray-700 mb-3">
@@ -132,24 +133,30 @@ export default function InsightsPage() {
         </CardContent>
       </Card>
 
-      {/* Most Frequent Categories */}
-      {frequentCategories.length > 0 && (
+      {/* Most Expensive Categories */}
+      {expensiveCategories.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>Most Used Categories</CardTitle>
+            <CardTitle>Most Expensive Categories</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {frequentCategories.map((item, index) => (
+              {expensiveCategories.map((item, index) => (
                 <div key={item.name} className="flex justify-between items-center">
                   <div className="flex items-center space-x-3">
                     <span className="w-6 h-6 bg-blue-100 text-blue-800 rounded-full flex items-center justify-center text-sm font-medium">
                       {index + 1}
                     </span>
-                    <span className="font-medium text-gray-900">{item.name}</span>
+                    <div className="flex items-center space-x-2">
+                      <div 
+                        className="w-3 h-3 rounded-full"
+                        style={{ backgroundColor: item.color }}
+                      />
+                      <span className="font-medium text-gray-900">{item.name}</span>
+                    </div>
                   </div>
-                  <span className="text-sm text-gray-600">
-                    {item.count} transaction{item.count !== 1 ? 's' : ''}
+                  <span className="text-sm font-semibold text-gray-900">
+                    {formatCurrency(item.spent)}
                   </span>
                 </div>
               ))}
@@ -187,7 +194,10 @@ export default function InsightsPage() {
       {overspentCategories.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>🚨 Overspent Categories</CardTitle>
+            <CardTitle className="flex items-center space-x-2">
+              <AlertTriangle className="h-5 w-5 text-red-600" />
+              <span>Overspent Categories</span>
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
@@ -219,7 +229,10 @@ export default function InsightsPage() {
       {underBudgetCategories.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>💰 Money Left Over</CardTitle>
+            <CardTitle className="flex items-center space-x-2">
+              <DollarSign className="h-5 w-5 text-green-600" />
+              <span>Money Left Over</span>
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
@@ -259,7 +272,9 @@ export default function InsightsPage() {
       {state.transactions.length === 0 && (
         <Card>
           <CardContent className="text-center py-12">
-            <div className="text-6xl mb-4">📈</div>
+            <div className="mb-4">
+              <TrendingUp className="h-16 w-16 mx-auto text-gray-400" />
+            </div>
             <h2 className="text-xl font-semibold mb-2">No insights yet</h2>
             <p className="text-gray-600">Start tracking transactions to see insights about your spending</p>
           </CardContent>

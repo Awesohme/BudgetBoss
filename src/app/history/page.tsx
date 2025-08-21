@@ -8,6 +8,7 @@ import { MonthSwitcher } from '@/components/MonthSwitcher'
 import { ConfirmModal } from '@/components/ConfirmModal'
 import { store } from '@/lib/store'
 import { formatCurrency } from '@/lib/month'
+import { Edit, Trash2, BarChart3 } from 'lucide-react'
 import type { BudgetState, Transaction } from '@/lib/models'
 
 export default function HistoryPage() {
@@ -288,7 +289,9 @@ export default function HistoryPage() {
       {filteredTransactions.length === 0 ? (
         <Card>
           <CardContent className="text-center py-12">
-            <div className="text-6xl mb-4">📊</div>
+            <div className="mb-4">
+              <BarChart3 className="h-16 w-16 mx-auto text-gray-400" />
+            </div>
             <h2 className="text-xl font-semibold mb-2">
               {state.transactions.length === 0 ? 'No transactions yet' : 'No transactions found'}
             </h2>
@@ -330,15 +333,15 @@ export default function HistoryPage() {
                                 />
                               )}
                               <span className="font-medium text-gray-900">{transaction.description}</span>
+                            </div>
+                            <div className="text-sm text-gray-600 mt-1 flex items-center space-x-2">
+                              <span>{transaction.is_unplanned ? '' : (category?.name || 'No Category')} • {transaction.account}</span>
                               {transaction.is_unplanned && (
-                                <span className="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded">
-                                  Unplanned
+                                <span className="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded font-medium">
+                                  Unplanned Expense
                                 </span>
                               )}
                             </div>
-                            <p className="text-sm text-gray-600 mt-1">
-                              {transaction.is_unplanned ? 'Unplanned Expense' : (category?.name || 'No Category')} • {transaction.account}
-                            </p>
                           </div>
                           <div className="flex items-center space-x-2">
                             <div className="text-right">
@@ -359,7 +362,7 @@ export default function HistoryPage() {
                                 onClick={() => handleEdit(transaction)}
                                 className="text-xs p-1 h-6"
                               >
-                                ✏️
+                                <Edit className="h-3 w-3" />
                               </Button>
                               <Button
                                 size="sm"
@@ -367,7 +370,7 @@ export default function HistoryPage() {
                                 onClick={() => handleDelete(transaction.id)}
                                 className="text-xs p-1 h-6 text-red-600 hover:text-red-800"
                               >
-                                🗑️
+                                <Trash2 className="h-3 w-3" />
                               </Button>
                             </div>
                           </div>

@@ -7,12 +7,14 @@ import { Button } from '@/components/Button'
 import { MonthSwitcher } from '@/components/MonthSwitcher'
 import { QuickAdd } from '@/components/QuickAdd'
 import { BorrowModal } from '@/components/BorrowModal'
+import { QuickRepeat } from '@/components/QuickRepeat'
 import { Accordion } from '@/components/Accordion'
 import { ExpandableFloatingButton } from '@/components/ExpandableFloatingButton'
 import { store } from '@/lib/store'
 import { formatCurrency, getCurrentMonth, formatSmartCurrency, getAmountTextSize } from '@/lib/month'
 import { syncService } from '@/lib/sync'
 import { supabase } from '@/lib/supabase'
+import { DollarSign, AlertTriangle, Zap, Cloud, Check, Rocket } from 'lucide-react'
 import type { BudgetState, User } from '@/lib/models'
 
 export default function HomePage() {
@@ -127,8 +129,7 @@ export default function HomePage() {
   const totalOverspent = store.getTotalOverspent()
   const totalUnplannedSpent = store.getTotalUnplannedSpent()
   const budgetRemaining = store.getBudgetRemaining()
-  const actualLeft = totalIncome - totalBudgeted - totalUnplannedSpent
-  const borrowedLent = store.getBorrowedLentSummary()
+  const incomeAllocationLeft = store.getIncomeAllocationLeft()
 
   const overspentCategories = categoriesWithSpent.filter(cat => cat.health === 'overspent')
 
@@ -177,18 +178,9 @@ export default function HomePage() {
                 loading={isSyncing}
                 icon={syncSuccess ? (
                   <span className="inline-block animate-bounce text-green-400">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="animate-pulse">
-                      <path 
-                        d="M20 6L9 17l-5-5" 
-                        stroke="currentColor" 
-                        strokeWidth="3" 
-                        strokeLinecap="round" 
-                        strokeLinejoin="round"
-                        className="animate-[draw_0.5s_ease-in-out_forwards]"
-                      />
-                    </svg>
+                    <Check className="h-4 w-4" />
                   </span>
-                ) : (!isSyncing && <span>☁️</span>)}
+                ) : (!isSyncing && <Cloud className="h-4 w-4" />)}
                 className={`transition-all duration-300 ${
                   syncSuccess 
                     ? 'bg-green-500/20 text-green-100 border-green-400/30 hover:bg-green-500/30' 
@@ -247,9 +239,9 @@ export default function HomePage() {
               <div className="flex justify-between items-center p-4 bg-white rounded-xl border border-gray-100">
                 <div className="flex items-center space-x-2">
                   <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                    <span className="text-sm">💰</span>
+                    <DollarSign className="h-4 w-4 text-green-600" />
                   </div>
-                  <span className="text-sm font-medium text-gray-700">Budget Remaining</span>
+                  <span className="text-sm font-medium text-gray-700">Amount in Bank</span>
                 </div>
                 <span className={`font-bold text-lg ${budgetRemaining >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                   {formatCurrency(budgetRemaining)}
@@ -260,7 +252,7 @@ export default function HomePage() {
                 <div className="flex justify-between items-center p-4 bg-red-50 rounded-xl border border-red-100">
                   <div className="flex items-center space-x-2">
                     <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
-                      <span className="text-sm">🚨</span>
+                      <AlertTriangle className="h-4 w-4 text-red-600" />
                     </div>
                     <span className="text-sm font-medium text-red-700">Total Overspent</span>
                   </div>
@@ -274,7 +266,7 @@ export default function HomePage() {
                 <div className="flex justify-between items-center p-4 bg-orange-50 rounded-xl border border-orange-100">
                   <div className="flex items-center space-x-2">
                     <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
-                      <span className="text-sm">⚡</span>
+                      <Zap className="h-4 w-4 text-orange-600" />
                     </div>
                     <span className="text-sm font-medium text-orange-700">Unplanned Expenses</span>
                   </div>
@@ -286,38 +278,23 @@ export default function HomePage() {
               
               <div className="flex justify-between items-center text-sm text-gray-600 border-t border-gray-100 pt-4">
                 <span className="font-medium">Income Allocation Left</span>
-                <span className={`font-semibold ${actualLeft >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                  {formatCurrency(actualLeft)}
+                <span className={`font-semibold ${incomeAllocationLeft >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  {formatCurrency(incomeAllocationLeft)}
                 </span>
               </div>
             </div>
         </CardContent>
       </Card>
 
-        {/* Borrowed/Lent Summary */}
-        {(borrowedLent.borrowed > 0 || borrowedLent.lent > 0) && (
-          <Card variant="elevated">
-            <CardHeader>
-              <CardTitle>Category Borrowing</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="text-center p-4 bg-blue-50 rounded-xl border border-blue-100">
-                  <p className="text-xs font-medium text-blue-700 uppercase tracking-wide">Total Borrowed</p>
-                  <p className="text-xl font-bold text-blue-600 mt-1">
-                    {formatCurrency(borrowedLent.borrowed)}
-                  </p>
-                </div>
-                <div className="text-center p-4 bg-green-50 rounded-xl border border-green-100">
-                  <p className="text-xs font-medium text-green-700 uppercase tracking-wide">Total Lent</p>
-                  <p className="text-xl font-bold text-green-600 mt-1">
-                    {formatCurrency(borrowedLent.lent)}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
+      {/* Quick Repeat Transactions */}
+      <Card variant="elevated">
+        <CardContent className="py-6">
+          <QuickRepeat onSuccess={() => {
+            // Refresh the page data when a quick transaction is added
+            store.loadMonth(store.getCurrentMonth())
+          }} />
+        </CardContent>
+      </Card>
 
       {/* Attention Needed - Only Overspent Categories */}
       {overspentCategories.length > 0 && (
@@ -358,10 +335,14 @@ export default function HomePage() {
                   <div key={transaction.id} className="flex justify-between items-center">
                     <div>
                       <p className="font-medium text-gray-900">{transaction.description}</p>
-                      <p className="text-sm text-gray-600">
-                        {transaction.is_unplanned ? 'Unplanned Expense' : (category?.name || 'No Category')} • {transaction.account}
-                        {transaction.is_unplanned && <span className="text-orange-600"> • Unplanned</span>}
-                      </p>
+                      <div className="text-sm text-gray-600 flex items-center space-x-2 mt-1">
+                        <span>{transaction.is_unplanned ? '' : (category?.name || 'No Category')} • {transaction.account}</span>
+                        {transaction.is_unplanned && (
+                          <span className="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded font-medium">
+                            Unplanned Expense
+                          </span>
+                        )}
+                      </div>
                     </div>
                     <span className="font-semibold text-gray-900">
                       {formatCurrency(transaction.amount)}
@@ -389,7 +370,7 @@ export default function HomePage() {
           <Card variant="elevated" className="bg-gradient-to-br from-indigo-50 to-purple-50 border-indigo-200">
             <CardContent className="text-center py-12">
               <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl">🚀</span>
+                <Rocket className="h-8 w-8 text-indigo-600" />
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-2">Welcome to BudgetBoss!</h3>
               <p className="text-gray-600 mb-6 max-w-md mx-auto">
@@ -398,7 +379,7 @@ export default function HomePage() {
               <Button 
                 onClick={() => router.push('/plan')}
                 size="lg"
-                icon={<span>🚀</span>}
+                icon={<Rocket className="h-5 w-5" />}
               >
                 Set Up Budget
               </Button>

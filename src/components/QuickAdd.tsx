@@ -5,6 +5,7 @@ import { Button } from './Button'
 import { Modal } from './Modal'
 import { Switch } from './Switch'
 import { store } from '@/lib/store'
+import { Clock, Calendar } from 'lucide-react'
 import type { BudgetState, QuickAddData } from '@/lib/models'
 
 interface QuickAddProps {
@@ -191,11 +192,17 @@ export function QuickAdd({ isOpen, onClose }: QuickAddProps) {
             </label>
             <button
               type="button"
-              onClick={() => setShowDateTime(!showDateTime)}
+              onClick={() => {
+                setShowDateTime(!showDateTime)
+                // If showing datetime picker for first time, set current date/time as default
+                if (!showDateTime && !formData.date) {
+                  setFormData(prev => ({ ...prev, date: new Date().toISOString() }))
+                }
+              }}
               className="text-sm text-blue-600 hover:text-blue-800 flex items-center space-x-1"
             >
               <span>{showDateTime ? 'Use current time' : 'Set custom date/time'}</span>
-              <span className="text-xs">⏰</span>
+              <Clock className="h-4 w-4" />
             </button>
           </div>
           
@@ -208,10 +215,12 @@ export function QuickAdd({ isOpen, onClose }: QuickAddProps) {
                 date: e.target.value ? new Date(e.target.value).toISOString() : undefined 
               }))}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+              autoFocus
             />
           ) : (
-            <div className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-600 text-sm">
-              📅 {new Date().toLocaleDateString()} at {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            <div className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-600 text-sm flex items-center space-x-2">
+              <Calendar className="h-4 w-4" />
+              <span>{new Date().toLocaleDateString()} at {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
             </div>
           )}
         </div>

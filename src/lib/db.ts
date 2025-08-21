@@ -1,7 +1,7 @@
 // IndexedDB layer for offline storage using idb-keyval
 
 import { get, set, del, keys } from 'idb-keyval'
-import type { Budget, Income, Category, Transaction, Settings } from './models'
+import type { Budget, Income, Category, Transaction, Settings, TransactionPattern } from './models'
 
 // Storage keys
 const PLAN_KEY = (month: string) => `plan:${month}`
@@ -9,6 +9,7 @@ const TX_KEY = (id: string) => `tx:${id}`
 const TX_INDEX_KEY = (month: string) => `txindex:${month}`
 const SETTINGS_KEY = 'settings'
 const SYNC_STATE_KEY = 'syncState'
+const PATTERNS_KEY = 'patterns'
 
 // Transaction index to track all transaction IDs for a month
 interface TransactionIndex {
@@ -155,5 +156,69 @@ export const db = {
     for (const key of allKeys) {
       await del(key)
     }
+  },
+
+  // Pattern tracking operations
+  async getPatterns(): Promise<TransactionPattern[]> {
+    try {
+      const patterns = await get(PATTERNS_KEY)
+      return patterns || []
+    } catch {
+      return []
+    }
+  },
+
+  async savePatterns(patterns: TransactionPattern[]): Promise<void> {
+    await set(PATTERNS_KEY, patterns)
+  },
+
+  async updatePattern(description: string, categoryId: string, amount: number): Promise<void> {
+    const patterns = await this.getPatterns()
+    const patternKey = `${description}:${categoryId}`
+    
+    const existingIndex = patterns.findIndex(p => 
+      p.description === description && p.category_id === categoryId
+    )
+    
+    if (existingIndex >= 0) {
+      // Update existing pattern
+      patterns[existingIndex] = {
+        ...patterns[existingIndex],
+        count: patterns[existingIndex].count + 1,
+        last_amount: amount,
+        last_used: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      }
+    } else {
+      // Create new pattern
+      const newPattern: TransactionPattern = {
+        id: crypto.randomUUID(),
+        description,
+        category_id: categoryId,
+        count: 1,
+        last_amount: amount,
+        last_used: new Date().toISOString(),
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      }
+      patterns.push(newPattern)
+    }
+    
+    await this.savePatterns(patterns)
+  },
+
+  async getFrequentPatterns(minCount: number = 3, limit: number = 3): Promise<TransactionPattern[]> {
+    const patterns = await this.getPatterns()
+    
+    return patterns
+      .filter(p => p.count >= minCount)
+      .sort((a, b) => {
+        // Sort by frequency, then by recency
+        if (b.count !== a.count) {
+          return b.count - a.count
+        }
+        return new Date(b.last_used).getTime() - new Date(a.last_used).getTime()
+      })
+      .slice(0, limit)
   }
 }

@@ -228,6 +228,11 @@ export class BudgetStore {
 
     await db.saveTransaction(transaction)
     await db.markForSync(transaction.id)
+    
+    // Update pattern tracking for non-unplanned transactions
+    if (!data.is_unplanned && categoryId) {
+      await db.updatePattern(data.description, categoryId, parseFloat(data.amount))
+    }
   }
 
   async updateTransaction(id: string, updates: Partial<Pick<Transaction, 'amount' | 'description' | 'category_id' | 'account' | 'is_unplanned' | 'date'>>): Promise<void> {
@@ -363,6 +368,20 @@ export class BudgetStore {
       .slice(0, 5)
   }
 
+  getMostExpensiveCategories(): { name: string; spent: number; color: string }[] {
+    const categoriesWithSpent = this.getCategoriesWithSpent()
+    
+    return categoriesWithSpent
+      .filter(category => category.spent > 0)
+      .sort((a, b) => b.spent - a.spent)
+      .slice(0, 5)
+      .map(category => ({
+        name: category.name,
+        spent: category.spent,
+        color: category.color
+      }))
+  }
+
   getBorrowedLentSummary(): { borrowed: number; lent: number } {
     let borrowed = 0
     let lent = 0
@@ -402,10 +421,35 @@ export class BudgetStore {
       .reduce((sum, tx) => sum + tx.amount, 0)
   }
 
+  // Amount that should be in bank (budget remaining - unplanned expenses)
   getBudgetRemaining(): number {
     const totalBudgeted = this.getTotalBudgeted()
     const totalSpent = this.getTotalSpent()
-    return totalBudgeted - totalSpent
+    const totalUnplanned = this.getTotalUnplannedSpent()
+    
+    // Budget remaining minus unplanned expenses = what should be in bank
+    return (totalBudgeted - totalSpent) - totalUnplanned
+  }
+
+  // Income allocation left (unbudgeted money)
+  getIncomeAllocationLeft(): number {
+    const totalIncome = this.getTotalIncome()
+    const totalBudgeted = this.getTotalBudgeted()
+    return totalIncome - totalBudgeted
+  }
+
+  async getFrequentPatterns(): Promise<Array<{ description: string; categoryName: string; amount: number; categoryId: string }>> {
+    const patterns = await db.getFrequentPatterns()
+    
+    return patterns.map(pattern => {
+      const category = this.state.categories.find(c => c.id === pattern.category_id)
+      return {
+        description: pattern.description,
+        categoryName: category?.name || 'Unknown',
+        amount: pattern.last_amount,
+        categoryId: pattern.category_id
+      }
+    }).filter(p => p.categoryName !== 'Unknown') // Only show patterns with valid categories
   }
 
   // Sync operations

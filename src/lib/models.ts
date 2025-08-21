@@ -116,3 +116,14 @@ export interface CategoryWithSpent extends Category {
   health: CategoryHealth
   remaining: number
 }
+
+export interface TransactionPattern {
+  id: string
+  description: string
+  category_id: string
+  count: number
+  last_amount: number
+  last_used: string
+  created_at: string
+  updated_at: string
+}
