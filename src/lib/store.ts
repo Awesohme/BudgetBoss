@@ -430,11 +430,12 @@ export class BudgetStore {
     return totalIncome - totalSpent
   }
 
-  // Income allocation left (unbudgeted money)
+  // Income allocation left (unbudgeted money minus unplanned expenses)
   getIncomeAllocationLeft(): number {
     const totalIncome = this.getTotalIncome()
     const totalBudgeted = this.getTotalBudgeted()
-    return totalIncome - totalBudgeted
+    const totalUnplanned = this.getTotalUnplannedSpent()
+    return totalIncome - totalBudgeted - totalUnplanned
   }
 
   async getFrequentPatterns(): Promise<Array<{ description: string; categoryName: string; amount: number; categoryId: string }>> {
