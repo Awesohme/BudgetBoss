@@ -334,13 +334,17 @@ export default function HistoryPage() {
                               )}
                               <span className="font-medium text-gray-900">{transaction.description}</span>
                             </div>
-                            <div className="text-sm text-gray-600 mt-1 flex items-center space-x-2">
-                              <span>{transaction.is_unplanned ? '' : (category?.name || 'No Category')} • {transaction.account}</span>
-                              {transaction.is_unplanned && (
-                                <span className="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded font-medium">
-                                  Unplanned Expense
+                            <div className="text-sm text-gray-600 mt-1">
+                              <div className="flex items-center justify-between">
+                                <span className="flex-1 min-w-0">
+                                  {transaction.is_unplanned ? '' : (category?.name || 'No Category')} • {transaction.account}
                                 </span>
-                              )}
+                                {transaction.is_unplanned && (
+                                  <span className="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded font-medium ml-2 flex-shrink-0">
+                                    Unplanned Expense
+                                  </span>
+                                )}
+                              </div>
                             </div>
                           </div>
                           <div className="flex items-center space-x-2">

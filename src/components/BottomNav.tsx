@@ -2,13 +2,14 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { Home, ClipboardList, DollarSign, History, TrendingUp } from 'lucide-react'
 
 const navItems = [
-  { href: '/', label: 'Home', icon: '🏠' },
-  { href: '/plan', label: 'Plan', icon: '📋' },
-  { href: '/track', label: 'Track', icon: '💰' },
-  { href: '/history', label: 'History', icon: '📊' },
-  { href: '/insights', label: 'Insights', icon: '📈' }
+  { href: '/', label: 'Home', icon: Home },
+  { href: '/plan', label: 'Plan', icon: ClipboardList },
+  { href: '/track', label: 'Track', icon: DollarSign },
+  { href: '/history', label: 'History', icon: History },
+  { href: '/insights', label: 'Insights', icon: TrendingUp }
 ]
 
 export function BottomNav() {
@@ -19,6 +20,7 @@ export function BottomNav() {
       <div className="grid grid-cols-5 h-16">
         {navItems.map((item) => {
           const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href))
+          const IconComponent = item.icon
           
           return (
             <Link
@@ -30,7 +32,7 @@ export function BottomNav() {
                   : 'text-gray-600 hover:text-blue-600'
               }`}
             >
-              <span className="text-lg mb-1">{item.icon}</span>
+              <IconComponent className="h-5 w-5 mb-1" />
               <span className="font-medium">{item.label}</span>
             </Link>
           )

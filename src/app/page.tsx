@@ -332,16 +332,20 @@ export default function HomePage() {
                 .slice(0, 5).map((transaction) => {
                 const category = state.categories.find(c => c.id === transaction.category_id)
                 return (
-                  <div key={transaction.id} className="flex justify-between items-center">
-                    <div>
-                      <p className="font-medium text-gray-900">{transaction.description}</p>
-                      <div className="text-sm text-gray-600 flex items-center space-x-2 mt-1">
-                        <span>{transaction.is_unplanned ? '' : (category?.name || 'No Category')} • {transaction.account}</span>
-                        {transaction.is_unplanned && (
-                          <span className="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded font-medium">
-                            Unplanned Expense
+                  <div key={transaction.id} className="flex justify-between items-start space-x-3">
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-gray-900 truncate">{transaction.description}</p>
+                      <div className="text-sm text-gray-600 mt-1">
+                        <div className="flex items-center justify-between">
+                          <span className="flex-1 min-w-0 truncate">
+                            {transaction.is_unplanned ? '' : (category?.name || 'No Category')} • {transaction.account}
                           </span>
-                        )}
+                          {transaction.is_unplanned && (
+                            <span className="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded font-medium ml-2 flex-shrink-0">
+                              Unplanned Expense
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
                     <span className="font-semibold text-gray-900">

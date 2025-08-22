@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { QuickAdd } from '@/components/QuickAdd'
 import { Button } from '@/components/Button'
 import { MonthSwitcher } from '@/components/MonthSwitcher'
+import { DollarSign } from 'lucide-react'
 
 export default function TrackPage() {
   const [isQuickAddOpen, setIsQuickAddOpen] = useState(false)
@@ -15,7 +16,9 @@ export default function TrackPage() {
       <MonthSwitcher />
 
       <div className="text-center py-12">
-        <div className="text-6xl mb-4">💰</div>
+        <div className="mb-4">
+          <DollarSign className="h-16 w-16 mx-auto text-gray-400" />
+        </div>
         <h2 className="text-xl font-semibold mb-2">Ready to track an expense?</h2>
         <p className="text-gray-600 mb-6">Add your transactions quickly and easily</p>
         
