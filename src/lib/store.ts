@@ -421,14 +421,13 @@ export class BudgetStore {
       .reduce((sum, tx) => sum + tx.amount, 0)
   }
 
-  // Amount that should be in bank (budget remaining - unplanned expenses)
+  // Amount that should be in bank (actual money remaining from income)
   getBudgetRemaining(): number {
-    const totalBudgeted = this.getTotalBudgeted()
+    const totalIncome = this.getTotalIncome()
     const totalSpent = this.getTotalSpent()
-    const totalUnplanned = this.getTotalUnplannedSpent()
     
-    // Budget remaining minus unplanned expenses = what should be in bank
-    return (totalBudgeted - totalSpent) - totalUnplanned
+    // Total income minus all spending = what should be in bank
+    return totalIncome - totalSpent
   }
 
   // Income allocation left (unbudgeted money)
