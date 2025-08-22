@@ -1,6 +1,7 @@
 'use client'
 
 import { Button } from './Button'
+import { RefreshCw } from 'lucide-react'
 
 interface UpdateBannerProps {
   isVisible: boolean
@@ -15,7 +16,7 @@ export function UpdateBanner({ isVisible, onUpdate, onDismiss }: UpdateBannerPro
     <div className="fixed top-0 left-0 right-0 z-50 bg-blue-600 text-white shadow-lg">
       <div className="p-3 flex items-center justify-between">
         <div className="flex items-center space-x-2">
-          <span className="text-lg">🔄</span>
+          <RefreshCw className="h-5 w-5" />
           <div>
             <p className="font-medium text-sm">New version available!</p>
             <p className="text-xs text-blue-100">Update now to get the latest features</p>

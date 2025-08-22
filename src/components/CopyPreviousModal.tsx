@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { Button } from './Button'
 import { Modal } from './Modal'
 import { db } from '@/lib/db'
+import { Calendar } from 'lucide-react'
 
 interface CopyPreviousModalProps {
   isOpen: boolean
@@ -99,7 +100,9 @@ export function CopyPreviousModal({ isOpen, onClose, onCopy, currentMonth }: Cop
           </div>
         ) : availableMonths.length === 0 ? (
           <div className="text-center py-8">
-            <div className="text-4xl mb-4">📅</div>
+            <div className="flex justify-center mb-4">
+              <Calendar className="h-16 w-16 text-gray-400" />
+            </div>
             <h3 className="text-lg font-semibold text-gray-900 mb-2">No Previous Data Found</h3>
             <p className="text-gray-600">
               You don&apos;t have any previous months with budget data to copy from.

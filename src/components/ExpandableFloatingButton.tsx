@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { RefreshCw, DollarSign, FileText, Banknote } from 'lucide-react'
 
 interface ExpandableFloatingButtonProps {
   onAddExpense?: () => void
@@ -40,7 +41,7 @@ export function ExpandableFloatingButton({
                 disabled={borrowDisabled}
                 className="w-14 h-14 bg-gray-600 text-white rounded-full shadow-lg hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transform transition-all duration-200 hover:scale-105"
               >
-                <span className="text-xl">🔄</span>
+                <RefreshCw className="h-6 w-6" />
               </button>
               
               <button
@@ -50,7 +51,7 @@ export function ExpandableFloatingButton({
                 }}
                 className="w-14 h-14 bg-green-600 text-white rounded-full shadow-lg hover:bg-green-700 flex items-center justify-center transform transition-all duration-200 hover:scale-105"
               >
-                <span className="text-xl">💰</span>
+                <DollarSign className="h-6 w-6" />
               </button>
             </>
           )}
@@ -64,7 +65,7 @@ export function ExpandableFloatingButton({
                 }}
                 className="w-14 h-14 bg-purple-600 text-white rounded-full shadow-lg hover:bg-purple-700 flex items-center justify-center transform transition-all duration-200 hover:scale-105"
               >
-                <span className="text-xl">📝</span>
+                <FileText className="h-6 w-6" />
               </button>
               
               <button
@@ -74,7 +75,7 @@ export function ExpandableFloatingButton({
                 }}
                 className="w-14 h-14 bg-green-600 text-white rounded-full shadow-lg hover:bg-green-700 flex items-center justify-center transform transition-all duration-200 hover:scale-105"
               >
-                <span className="text-xl">💵</span>
+                <Banknote className="h-6 w-6" />
               </button>
             </>
           )}

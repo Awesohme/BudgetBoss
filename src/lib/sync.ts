@@ -281,7 +281,7 @@ export class SyncService {
       const localPlan = await db.getPlan(month)
       
       // Step 1: Push local changes first (in case local is ahead)
-      console.log('🔄 Pushing local changes...')
+      console.log('Pushing local changes...')
       try {
         if (localPlan && (localPlan.incomes.length > 0 || localPlan.categories.length > 0)) {
           await this.pushPlan(month)
@@ -292,7 +292,7 @@ export class SyncService {
       }
       
       // Step 2: Pull and merge remote changes using Last Write Wins
-      console.log('🔄 Pulling and merging remote changes...')
+      console.log('Pulling and merging remote changes...')
       try {
         await this.pullPlan(month, userId)
       } catch (pullError) {
@@ -333,7 +333,7 @@ export class SyncService {
       syncState.lastSync = new Date().toISOString()
       await db.setSyncState(syncState)
       
-      console.log('✅ Sync completed successfully')
+      console.log('Sync completed successfully')
       
     } catch (error) {
       console.error('Sync failed completely:', error)

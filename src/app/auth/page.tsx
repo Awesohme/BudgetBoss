@@ -247,7 +247,7 @@ function AuthForm() {
           </div>
 
           <div className="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-lg">
-            <h4 className="text-sm font-medium text-gray-900 mb-2">📱 Offline Mode Available</h4>
+            <h4 className="text-sm font-medium text-gray-900 mb-2">Offline Mode Available</h4>
             <p className="text-xs text-gray-700 mb-2">
               Your budgets will be saved locally on this device. You can set up cloud sync later.
             </p>

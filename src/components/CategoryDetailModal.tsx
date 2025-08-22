@@ -5,6 +5,7 @@ import { Button } from './Button'
 import { Modal } from './Modal'
 import { formatCurrency } from '@/lib/month'
 import { store } from '@/lib/store'
+import { AlertTriangle, Zap, CheckCircle, FileText, DollarSign } from 'lucide-react'
 import type { CategoryWithSpent, Transaction } from '@/lib/models'
 
 interface CategoryDetailModalProps {
@@ -53,9 +54,24 @@ export function CategoryDetailModal({ isOpen, onClose, category, transactions }:
 
   const getHealthText = () => {
     switch (category.health) {
-      case 'overspent': return '⚠️ Over Budget'
-      case 'warning': return '⚡ Almost Full'
-      default: return '✅ On Track'
+      case 'overspent': return (
+        <span className="flex items-center space-x-1">
+          <AlertTriangle className="h-3 w-3" />
+          <span>Over Budget</span>
+        </span>
+      )
+      case 'warning': return (
+        <span className="flex items-center space-x-1">
+          <Zap className="h-3 w-3" />
+          <span>Almost Full</span>
+        </span>
+      )
+      default: return (
+        <span className="flex items-center space-x-1">
+          <CheckCircle className="h-3 w-3" />
+          <span>On Track</span>
+        </span>
+      )
     }
   }
 
@@ -178,7 +194,9 @@ export function CategoryDetailModal({ isOpen, onClose, category, transactions }:
                 </div>
               ) : (
                 <div className="text-center py-8 text-gray-500">
-                  <div className="text-4xl mb-2">📝</div>
+                  <div className="flex justify-center mb-2">
+                    <FileText className="h-12 w-12" />
+                  </div>
                   <p className="text-sm">No notes yet</p>
                   <p className="text-xs">Add budget breakdowns or reminders</p>
                 </div>
@@ -216,7 +234,9 @@ export function CategoryDetailModal({ isOpen, onClose, category, transactions }:
             </div>
           ) : (
             <div className="text-center py-6 text-gray-500">
-              <div className="text-3xl mb-2">💸</div>
+              <div className="flex justify-center mb-2">
+                <DollarSign className="h-10 w-10" />
+              </div>
               <p className="text-sm">No transactions yet</p>
               <p className="text-xs">Start tracking expenses in this category</p>
             </div>

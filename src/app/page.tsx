@@ -299,7 +299,7 @@ export default function HomePage() {
       {/* Attention Needed - Only Overspent Categories */}
       {overspentCategories.length > 0 && (
         <Accordion 
-          title={`⚠️ Attention Needed (${overspentCategories.length})`}
+          title={`Attention Needed (${overspentCategories.length})`}
           defaultOpen={false}
           className="bg-white"
         >

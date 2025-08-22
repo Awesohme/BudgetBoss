@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { DollarSign, Tag } from 'lucide-react'
 import { Button } from './Button'
 import { Modal } from './Modal'
 
@@ -44,7 +45,7 @@ export function FloatingActionButton({ onAddIncome, onAddCategory }: FloatingAct
             variant="secondary"
           >
             <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-              <span className="text-green-600 text-xl">💰</span>
+              <DollarSign className="h-6 w-6 text-green-600" />
             </div>
             <div className="text-left">
               <div className="font-medium">Add Income</div>
@@ -58,7 +59,7 @@ export function FloatingActionButton({ onAddIncome, onAddCategory }: FloatingAct
             variant="secondary"
           >
             <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-              <span className="text-blue-600 text-xl">🏷️</span>
+              <Tag className="h-6 w-6 text-blue-600" />
             </div>
             <div className="text-left">
               <div className="font-medium">Add Category</div>

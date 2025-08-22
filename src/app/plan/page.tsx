@@ -11,6 +11,7 @@ import { CopyPreviousModal } from '@/components/CopyPreviousModal'
 import { CategoryDetailModal } from '@/components/CategoryDetailModal'
 import { store } from '@/lib/store'
 import { formatCurrency } from '@/lib/month'
+import { Edit, Trash2, FileText } from 'lucide-react'
 import type { BudgetState } from '@/lib/models'
 
 export default function PlanPage() {
@@ -200,7 +201,7 @@ export default function PlanPage() {
                       }}
                       className="text-blue-600 hover:text-blue-800 text-sm p-1"
                     >
-                      ✏️
+                      <Edit className="h-4 w-4" />
                     </button>
                     <button
                       onClick={() => {
@@ -214,7 +215,7 @@ export default function PlanPage() {
                       }}
                       className="text-red-600 hover:text-red-800 text-sm p-1"
                     >
-                      🗑️
+                      <Trash2 className="h-4 w-4" />
                     </button>
                   </div>
                 </div>
@@ -249,7 +250,10 @@ export default function PlanPage() {
                       <span className="font-medium text-gray-900">{category.name}</span>
                       {category.notes && (
                         <div className="flex items-center mt-1">
-                          <span className="text-xs text-blue-600">📝 Has notes</span>
+                          <span className="text-xs text-blue-600 flex items-center space-x-1">
+                            <FileText className="h-3 w-3" />
+                            <span>Has notes</span>
+                          </span>
                         </div>
                       )}
                     </div>
@@ -273,7 +277,7 @@ export default function PlanPage() {
                         }}
                         className="text-blue-600 hover:text-blue-800 text-sm p-1"
                       >
-                        ✏️
+                        <Edit className="h-4 w-4" />
                       </button>
                       <button
                         onClick={() => {
@@ -287,7 +291,7 @@ export default function PlanPage() {
                         }}
                         className="text-red-600 hover:text-red-800 text-sm p-1"
                       >
-                        🗑️
+                        <Trash2 className="h-4 w-4" />
                       </button>
                     </div>
                   </div>
