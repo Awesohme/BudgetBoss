@@ -174,7 +174,6 @@ export const db = {
 
   async updatePattern(description: string, categoryId: string, amount: number): Promise<void> {
     const patterns = await this.getPatterns()
-    const patternKey = `${description}:${categoryId}`
     
     const existingIndex = patterns.findIndex(p => 
       p.description === description && p.category_id === categoryId

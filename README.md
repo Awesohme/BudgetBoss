@@ -1,11 +1,12 @@
 # 💰 BudgetBoss
 
-> A modern, offline-first budgeting PWA with cloud sync and permanent session authentication
+> A modern, offline-first budgeting PWA with smart pattern learning and intuitive financial insights
 
-![Version](https://img.shields.io/badge/version-4.1-blue.svg)
+![Version](https://img.shields.io/badge/version-4.2-blue.svg)
 ![Next.js](https://img.shields.io/badge/Next.js-15-black.svg)
 ![Supabase](https://img.shields.io/badge/Supabase-Auth-green.svg)
 ![PWA](https://img.shields.io/badge/PWA-Ready-purple.svg)
+![Icons](https://img.shields.io/badge/Icons-Lucide-orange.svg)
 
 ## ✨ Features
 
@@ -16,10 +17,12 @@
 - **Permanent Sessions** - Stay logged in indefinitely (perfect for PWA usage)
 
 ### 💰 **Smart Budget Management**
-- Monthly budget planning with income + category system
-- Transaction tracking with enforced descriptions
-- Category borrowing for flexible budget adjustments
-- Nigerian Naira (₦) currency support with smart formatting
+- **Intelligent Dashboard** - Shows actual amount meant to be in bank account
+- **Smart Pattern Learning** - Auto-suggests frequently used transactions
+- **Quick Repeat Transactions** - One-tap transaction creation from patterns
+- **Enhanced Calculations** - Unplanned expenses properly reduce bank balance
+- **Category Management** - Flexible borrowing system with insights tracking
+- **Nigerian Naira (₦)** - Smart formatting with K/M abbreviations
 
 ### 📱 **Progressive Web App**
 - Offline-first with IndexedDB storage
@@ -28,10 +31,19 @@
 - Works seamlessly when saved to home screen
 
 ### 📊 **Analytics & Insights**
-- Category health monitoring (80% warnings, overspent alerts)
-- Most/least frequent spending analysis
-- Borrowed/lent tracking with visual summaries
-- Performance metrics and savings analysis
+- **Real-Time Dashboard** - Amount in bank vs budget remaining insights
+- **Most Expensive Categories** - Prioritized spending analysis (replaced frequency-based)
+- **Category Borrowing Insights** - Moved to dedicated insights section
+- **Enhanced Transaction History** - Unplanned expenses styled as intuitive tags
+- **Pattern Recognition** - Smart learning from transaction habits
+- **Performance Metrics** - Overspent alerts and savings tracking
+
+### 🎨 **Modern User Experience**
+- **Professional Icon System** - Lucide React icons throughout
+- **Streamlined Time Picker** - Direct date/time selection (no intermediate steps)
+- **Smart Amount Display** - Responsive text sizing with K/M formatting
+- **Tag-Based Organization** - Intuitive unplanned expense styling
+- **One-Tap Actions** - Quick repeat transactions from learned patterns
 
 ## 🚀 Quick Start
 
@@ -65,9 +77,10 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 ## 🏗️ Tech Stack
 
 - **Frontend**: Next.js 15 + TypeScript + Tailwind CSS
+- **Icons**: Lucide React (professional icon system)
 - **Authentication**: Supabase Auth with dual methods
 - **Database**: Supabase PostgreSQL with Row Level Security
-- **Storage**: IndexedDB (idb-keyval) for offline-first experience
+- **Storage**: IndexedDB (idb-keyval) for offline-first + pattern learning
 - **PWA**: Service Worker + Web App Manifest
 
 ## 📱 Authentication Flow
