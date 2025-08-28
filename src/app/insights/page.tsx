@@ -25,6 +25,10 @@ export default function InsightsPage() {
   const borrowedLent = store.getBorrowedLentSummary()
   const overspentCategories = store.getOverspentCategories()
   const underBudgetCategories = store.getUnderBudgetCategories()
+  
+  // Calculate unplanned vs remaining budget comparison
+  const totalUnplannedSpent = store.getTotalUnplannedSpent()
+  const totalRemainingBudget = underBudgetCategories.reduce((sum, cat) => sum + cat.remaining, 0)
 
   const handleExcelExport = async () => {
     setIsExporting(true)
@@ -262,6 +266,61 @@ export default function InsightsPage() {
                 <span className="font-bold text-green-600">
                   {formatCurrency(underBudgetCategories.reduce((sum, cat) => sum + cat.remaining, 0))}
                 </span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Unplanned vs Remaining Budget Comparison */}
+      {(totalUnplannedSpent > 0 || totalRemainingBudget > 0) && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <AlertTriangle className="h-5 w-5 text-orange-600" />
+              <span>Unplanned vs Available Budget</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="text-center p-4 bg-red-50 border border-red-200 rounded-lg">
+                  <p className="text-sm text-red-600 mb-1">Unplanned Expenses</p>
+                  <p className="text-xl font-bold text-red-800">
+                    {formatCurrency(totalUnplannedSpent)}
+                  </p>
+                </div>
+                <div className="text-center p-4 bg-green-50 border border-green-200 rounded-lg">
+                  <p className="text-sm text-green-600 mb-1">Budget Remaining</p>
+                  <p className="text-xl font-bold text-green-800">
+                    {formatCurrency(totalRemainingBudget)}
+                  </p>
+                </div>
+              </div>
+              
+              {/* Comparison Analysis */}
+              <div className="p-4 bg-gray-50 rounded-lg">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="font-medium">Impact Analysis:</span>
+                  <span className={`font-bold ${
+                    totalUnplannedSpent > totalRemainingBudget ? 'text-red-600' : 
+                    totalUnplannedSpent > totalRemainingBudget * 0.5 ? 'text-orange-600' : 
+                    'text-green-600'
+                  }`}>
+                    {totalUnplannedSpent > totalRemainingBudget ? 'Over Budget' :
+                     totalUnplannedSpent > totalRemainingBudget * 0.5 ? 'High Impact' :
+                     'Under Control'}
+                  </span>
+                </div>
+                <div className="text-sm text-gray-700">
+                  {totalUnplannedSpent > totalRemainingBudget ? (
+                    <>Your unplanned expenses exceed your remaining budget by {formatCurrency(totalUnplannedSpent - totalRemainingBudget)}. This explains why your actual bank balance is lower than expected.</>
+                  ) : totalUnplannedSpent > totalRemainingBudget * 0.5 ? (
+                    <>Unplanned expenses are consuming {((totalUnplannedSpent / totalRemainingBudget) * 100).toFixed(0)}% of your remaining budget. Consider planning for these expenses next month.</>
+                  ) : (
+                    <>Good control! Unplanned expenses represent only {((totalUnplannedSpent / Math.max(totalRemainingBudget, 1)) * 100).toFixed(0)}% of your available budget.</>
+                  )}
+                </div>
               </div>
             </div>
           </CardContent>

@@ -133,6 +133,14 @@ export default function HomePage() {
 
   const overspentCategories = categoriesWithSpent.filter(cat => cat.health === 'overspent')
 
+  // Calculate unplanned vs remaining budget for home page alert
+  const underBudgetCategories = store.getUnderBudgetCategories()
+  const totalRemainingBudget = underBudgetCategories.reduce((sum, cat) => sum + cat.remaining, 0)
+  const shouldShowUnplannedAlert = totalUnplannedSpent > 0 && (
+    totalUnplannedSpent > totalRemainingBudget || 
+    totalUnplannedSpent > totalRemainingBudget * 0.5
+  )
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -247,6 +255,35 @@ export default function HomePage() {
                   {formatCurrency(budgetRemaining)}
                 </span>
               </div>
+
+              {/* Unplanned Expense Alert */}
+              {shouldShowUnplannedAlert && (
+                <div className="p-4 bg-orange-50 border border-orange-200 rounded-xl">
+                  <div className="flex items-start space-x-3">
+                    <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <AlertTriangle className="h-4 w-4 text-orange-600" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-orange-800 mb-1">
+                        {totalUnplannedSpent > totalRemainingBudget ? 'Bank Balance Discrepancy' : 'High Unplanned Impact'}
+                      </p>
+                      <p className="text-xs text-orange-700">
+                        {totalUnplannedSpent > totalRemainingBudget ? (
+                          <>Unplanned expenses ({formatCurrency(totalUnplannedSpent)}) exceed remaining budget ({formatCurrency(totalRemainingBudget)})</>
+                        ) : (
+                          <>Unplanned expenses ({formatCurrency(totalUnplannedSpent)}) consuming {((totalUnplannedSpent / Math.max(totalRemainingBudget, 1)) * 100).toFixed(0)}% of available budget</>
+                        )}
+                      </p>
+                      <button 
+                        onClick={() => router.push('/insights')}
+                        className="text-xs text-orange-600 hover:text-orange-800 underline mt-1"
+                      >
+                        View full analysis →
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
               
               {totalOverspent > 0 && (
                 <div className="flex justify-between items-center p-4 bg-red-50 rounded-xl border border-red-100">
