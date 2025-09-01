@@ -310,7 +310,7 @@ export default function HistoryPage() {
             .map(([date, transactions]) => (
               <Card key={date}>
                 <CardContent className="p-4">
-                  <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                  <h3 className="font-semibold text-black dark:text-gray-100 mb-4">
                     {new Date(date).toLocaleDateString('en-US', { 
                       weekday: 'long', 
                       year: 'numeric', 
@@ -332,7 +332,7 @@ export default function HistoryPage() {
                                   style={{ backgroundColor: category.color }}
                                 />
                               )}
-                              <span className="font-medium text-gray-900 dark:text-gray-100 leading-5">
+                              <span className="font-medium text-black dark:text-gray-100 leading-5">
                                 {transaction.description}
                               </span>
                             </div>
@@ -351,7 +351,7 @@ export default function HistoryPage() {
                                 </span>
                               </div>
                               {transaction.is_unplanned && (
-                                <span className="text-xs bg-red-50 dark:bg-red-900 text-red-700 dark:text-red-200 px-2 py-1 rounded-full font-medium ml-2 flex-shrink-0 border border-red-200 dark:border-red-700">
+                                <span className="text-xs text-black dark:text-red-200 px-2 py-1 rounded-full font-medium ml-2 flex-shrink-0" style={{backgroundColor: '#fdaaaa'}}>
                                   Unplanned Expense
                                 </span>
                               )}
@@ -359,7 +359,7 @@ export default function HistoryPage() {
                           </div>
                           <div className="flex items-center space-x-3 flex-shrink-0">
                             <div className="text-right">
-                              <div className="font-semibold text-gray-900 dark:text-gray-100">
+                              <div className="font-semibold text-black dark:text-gray-100">
                                 {formatCurrency(transaction.amount)}
                               </div>
                             </div>
