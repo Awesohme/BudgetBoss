@@ -337,13 +337,13 @@ export default function HistoryPage() {
                               </span>
                             </div>
                             <div className="flex items-center justify-between">
-                              <div className="text-sm text-gray-600 dark:text-gray-400 flex items-center space-x-2">
+                              <div className="text-sm text-gray-700 dark:text-gray-400 flex items-center space-x-2">
                                 <span className="flex-shrink-0">
                                   {transaction.is_unplanned ? '' : (category?.name || 'No Category')}
                                   {!transaction.is_unplanned && ' • '}
                                   {transaction.account}
                                 </span>
-                                <span className="text-xs text-gray-500 dark:text-gray-400">
+                                <span className="text-xs text-gray-600 dark:text-gray-400">
                                   {new Date(transaction.date).toLocaleTimeString('en-US', {
                                     hour: 'numeric',
                                     minute: '2-digit'
@@ -389,7 +389,7 @@ export default function HistoryPage() {
                   
                   <div className="border-t border-gray-200 dark:border-gray-600 pt-3 mt-4">
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-600 dark:text-gray-300">Daily Total</span>
+                      <span className="text-gray-700 dark:text-gray-300">Daily Total</span>
                       <span className="font-semibold text-gray-900 dark:text-gray-100">
                         {formatCurrency(transactions.reduce((sum, t) => sum + t.amount, 0))}
                       </span>
