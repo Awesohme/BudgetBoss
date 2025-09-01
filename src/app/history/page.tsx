@@ -319,14 +319,14 @@ export default function HistoryPage() {
                     })}
                   </h3>
                   
-                  <div className="space-y-4">
+                  <div className="space-y-2">
                     {transactions.map((transaction) => {
                       const category = state.categories.find(c => c.id === transaction.category_id)
                       return (
-                        <div key={transaction.id} className="flex justify-between items-start py-2">
+                        <div key={transaction.id} className="flex justify-between items-start p-4 border border-gray-100 rounded-lg bg-gray-50/30 hover:bg-gray-50/50 transition-colors">
                           <div className="flex-1 min-w-0 pr-3">
-                            <div className="flex items-center space-x-3 mb-2">
-                              {category && (
+                            <div className="flex items-center space-x-2 mb-1">
+                              {category && !transaction.is_unplanned && (
                                 <div 
                                   className="w-3 h-3 rounded-full flex-shrink-0"
                                   style={{ backgroundColor: category.color }}
@@ -336,24 +336,20 @@ export default function HistoryPage() {
                                 {transaction.description}
                               </span>
                             </div>
-                            <div className="flex items-center justify-between">
-                              <div className="text-sm text-black flex items-center space-x-2">
-                                <span className="flex-shrink-0">
-                                  {transaction.is_unplanned ? '' : (category?.name || 'No Category')}
-                                  {!transaction.is_unplanned && ' • '}
-                                  {transaction.account}
-                                </span>
-                                <span className="text-xs text-black">
-                                  {new Date(transaction.date).toLocaleTimeString('en-US', {
-                                    hour: 'numeric',
-                                    minute: '2-digit'
-                                  })}
-                                </span>
-                              </div>
+                            <div className="text-sm text-gray-600 flex items-center space-x-2">
+                              <span className="flex-shrink-0">
+                                {transaction.is_unplanned ? 'Unplanned expense' : (category?.name || 'No Category')}
+                                {' • '}
+                                {transaction.account}
+                              </span>
+                              <span className="text-xs text-gray-500">
+                                {new Date(transaction.date).toLocaleTimeString('en-US', {
+                                  hour: 'numeric',
+                                  minute: '2-digit'
+                                })}
+                              </span>
                               {transaction.is_unplanned && (
-                                <span className="text-xs text-black dark:text-red-200 px-2 py-1 rounded-full font-medium ml-2 flex-shrink-0" style={{backgroundColor: '#fdaaaa'}}>
-                                  Unplanned Expense
-                                </span>
+                                <span className="text-xs text-red-600 font-medium">*</span>
                               )}
                             </div>
                           </div>
@@ -387,10 +383,10 @@ export default function HistoryPage() {
                     })}
                   </div>
                   
-                  <div className="border-t border-gray-200 dark:border-gray-600 pt-3 mt-4">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-black">Daily Total</span>
-                      <span className="font-semibold text-black">
+                  <div className="border-t border-gray-200 pt-4 mt-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-black font-medium">Daily Total</span>
+                      <span className="font-bold text-black text-lg">
                         {formatCurrency(transactions.reduce((sum, t) => sum + t.amount, 0))}
                       </span>
                     </div>
