@@ -310,7 +310,7 @@ export default function HistoryPage() {
             .map(([date, transactions]) => (
               <Card key={date}>
                 <CardContent className="p-4">
-                  <h3 className="font-semibold text-gray-900 mb-3">
+                  <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-4">
                     {new Date(date).toLocaleDateString('en-US', { 
                       weekday: 'long', 
                       year: 'numeric', 
@@ -319,52 +319,56 @@ export default function HistoryPage() {
                     })}
                   </h3>
                   
-                  <div className="space-y-3">
+                  <div className="space-y-4">
                     {transactions.map((transaction) => {
                       const category = state.categories.find(c => c.id === transaction.category_id)
                       return (
-                        <div key={transaction.id} className="flex justify-between items-start">
-                          <div className="flex-1">
-                            <div className="flex items-center space-x-2">
+                        <div key={transaction.id} className="flex justify-between items-start py-2">
+                          <div className="flex-1 min-w-0 pr-3">
+                            <div className="flex items-center space-x-3 mb-2">
                               {category && (
                                 <div 
-                                  className="w-3 h-3 rounded-full"
+                                  className="w-3 h-3 rounded-full flex-shrink-0"
                                   style={{ backgroundColor: category.color }}
                                 />
                               )}
-                              <span className="font-medium text-gray-900">{transaction.description}</span>
+                              <span className="font-medium text-gray-900 dark:text-gray-100 leading-5">
+                                {transaction.description}
+                              </span>
                             </div>
-                            <div className="text-sm text-gray-600 mt-1">
-                              <div className="flex items-center justify-between">
-                                <span className="flex-1 min-w-0">
-                                  {transaction.is_unplanned ? '' : (category?.name || 'No Category')} • {transaction.account}
+                            <div className="flex items-center justify-between">
+                              <div className="text-sm text-gray-600 dark:text-gray-400 flex items-center space-x-2">
+                                <span className="flex-shrink-0">
+                                  {transaction.is_unplanned ? '' : (category?.name || 'No Category')}
+                                  {!transaction.is_unplanned && ' • '}
+                                  {transaction.account}
                                 </span>
-                                {transaction.is_unplanned && (
-                                  <span className="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded font-medium ml-2 flex-shrink-0">
-                                    Unplanned Expense
-                                  </span>
-                                )}
+                                <span className="text-xs text-gray-500 dark:text-gray-400">
+                                  {new Date(transaction.date).toLocaleTimeString('en-US', {
+                                    hour: 'numeric',
+                                    minute: '2-digit'
+                                  })}
+                                </span>
                               </div>
+                              {transaction.is_unplanned && (
+                                <span className="text-xs bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200 px-2 py-1 rounded-full font-medium ml-2 flex-shrink-0">
+                                  Unplanned Expense
+                                </span>
+                              )}
                             </div>
                           </div>
-                          <div className="flex items-center space-x-2">
+                          <div className="flex items-center space-x-3 flex-shrink-0">
                             <div className="text-right">
-                              <span className="font-semibold text-gray-900">
+                              <div className="font-semibold text-gray-900 dark:text-gray-100">
                                 {formatCurrency(transaction.amount)}
-                              </span>
-                              <p className="text-xs text-gray-500">
-                                {new Date(transaction.date).toLocaleTimeString('en-US', {
-                                  hour: 'numeric',
-                                  minute: '2-digit'
-                                })}
-                              </p>
+                              </div>
                             </div>
                             <div className="flex flex-col space-y-1">
                               <Button
                                 size="sm"
                                 variant="ghost"
                                 onClick={() => handleEdit(transaction)}
-                                className="text-xs p-1 h-6"
+                                className="text-xs p-1 h-6 w-6"
                               >
                                 <Edit className="h-3 w-3" />
                               </Button>
@@ -372,7 +376,7 @@ export default function HistoryPage() {
                                 size="sm"
                                 variant="ghost"
                                 onClick={() => handleDelete(transaction.id)}
-                                className="text-xs p-1 h-6 text-red-600 hover:text-red-800"
+                                className="text-xs p-1 h-6 w-6 text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
                               >
                                 <Trash2 className="h-3 w-3" />
                               </Button>
@@ -383,10 +387,10 @@ export default function HistoryPage() {
                     })}
                   </div>
                   
-                  <div className="border-t pt-3 mt-3">
+                  <div className="border-t border-gray-200 dark:border-gray-600 pt-3 mt-4">
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Daily Total</span>
-                      <span className="font-semibold">
+                      <span className="text-gray-600 dark:text-gray-300">Daily Total</span>
+                      <span className="font-semibold text-gray-900 dark:text-gray-100">
                         {formatCurrency(transactions.reduce((sum, t) => sum + t.amount, 0))}
                       </span>
                     </div>
