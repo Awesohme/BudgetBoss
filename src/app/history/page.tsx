@@ -310,7 +310,7 @@ export default function HistoryPage() {
             .map(([date, transactions]) => (
               <Card key={date}>
                 <CardContent className="p-4">
-                  <h3 className="font-semibold text-black dark:text-gray-100 mb-4">
+                  <h3 className="font-semibold text-black mb-4">
                     {new Date(date).toLocaleDateString('en-US', { 
                       weekday: 'long', 
                       year: 'numeric', 
@@ -332,18 +332,18 @@ export default function HistoryPage() {
                                   style={{ backgroundColor: category.color }}
                                 />
                               )}
-                              <span className="font-medium text-black dark:text-gray-100 leading-5">
+                              <span className="font-medium text-black leading-5">
                                 {transaction.description}
                               </span>
                             </div>
                             <div className="flex items-center justify-between">
-                              <div className="text-sm text-black dark:text-gray-300 flex items-center space-x-2">
+                              <div className="text-sm text-black flex items-center space-x-2">
                                 <span className="flex-shrink-0">
                                   {transaction.is_unplanned ? '' : (category?.name || 'No Category')}
                                   {!transaction.is_unplanned && ' • '}
                                   {transaction.account}
                                 </span>
-                                <span className="text-xs text-black dark:text-gray-400">
+                                <span className="text-xs text-black">
                                   {new Date(transaction.date).toLocaleTimeString('en-US', {
                                     hour: 'numeric',
                                     minute: '2-digit'
@@ -359,7 +359,7 @@ export default function HistoryPage() {
                           </div>
                           <div className="flex items-center space-x-3 flex-shrink-0">
                             <div className="text-right">
-                              <div className="font-semibold text-black dark:text-gray-100">
+                              <div className="font-semibold text-black">
                                 {formatCurrency(transaction.amount)}
                               </div>
                             </div>
@@ -389,8 +389,8 @@ export default function HistoryPage() {
                   
                   <div className="border-t border-gray-200 dark:border-gray-600 pt-3 mt-4">
                     <div className="flex justify-between text-sm">
-                      <span className="text-black dark:text-gray-300">Daily Total</span>
-                      <span className="font-semibold text-gray-900 dark:text-gray-100">
+                      <span className="text-black">Daily Total</span>
+                      <span className="font-semibold text-black">
                         {formatCurrency(transactions.reduce((sum, t) => sum + t.amount, 0))}
                       </span>
                     </div>
