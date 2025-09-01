@@ -337,13 +337,13 @@ export default function HistoryPage() {
                               </span>
                             </div>
                             <div className="flex items-center justify-between">
-                              <div className="text-sm text-gray-700 dark:text-gray-400 flex items-center space-x-2">
+                              <div className="text-sm text-black dark:text-gray-300 flex items-center space-x-2">
                                 <span className="flex-shrink-0">
                                   {transaction.is_unplanned ? '' : (category?.name || 'No Category')}
                                   {!transaction.is_unplanned && ' • '}
                                   {transaction.account}
                                 </span>
-                                <span className="text-xs text-gray-600 dark:text-gray-400">
+                                <span className="text-xs text-black dark:text-gray-400">
                                   {new Date(transaction.date).toLocaleTimeString('en-US', {
                                     hour: 'numeric',
                                     minute: '2-digit'
@@ -351,7 +351,7 @@ export default function HistoryPage() {
                                 </span>
                               </div>
                               {transaction.is_unplanned && (
-                                <span className="text-xs bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200 px-2 py-1 rounded-full font-medium ml-2 flex-shrink-0">
+                                <span className="text-xs bg-red-50 dark:bg-red-900 text-red-700 dark:text-red-200 px-2 py-1 rounded-full font-medium ml-2 flex-shrink-0 border border-red-200 dark:border-red-700">
                                   Unplanned Expense
                                 </span>
                               )}
@@ -389,7 +389,7 @@ export default function HistoryPage() {
                   
                   <div className="border-t border-gray-200 dark:border-gray-600 pt-3 mt-4">
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-700 dark:text-gray-300">Daily Total</span>
+                      <span className="text-black dark:text-gray-300">Daily Total</span>
                       <span className="font-semibold text-gray-900 dark:text-gray-100">
                         {formatCurrency(transactions.reduce((sum, t) => sum + t.amount, 0))}
                       </span>
