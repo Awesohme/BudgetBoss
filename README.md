@@ -2,11 +2,24 @@
 
 > A modern, offline-first budgeting PWA with smart pattern learning and intuitive financial insights
 
+## 📋 Project Status: Sunset Mode
+
+**This project is no longer in active development as of September 2025.**
+
+However, the codebase remains available for:
+- 🎓 **Learning and reference** - Well-documented architecture and patterns
+- 🍴 **Community forks and improvements** - Feel free to continue development
+- 📚 **Educational purposes** - Real-world PWA and offline-first implementation
+- 🔍 **Code study** - Modern React, TypeScript, and Supabase integration
+
+**📖 See [`learnings_from_budgetboss.md`](./learnings_from_budgetboss.md) for detailed insights, lessons learned, and mistakes to avoid in your own projects.**
+
 ![Version](https://img.shields.io/badge/version-4.2-blue.svg)
 ![Next.js](https://img.shields.io/badge/Next.js-15-black.svg)
 ![Supabase](https://img.shields.io/badge/Supabase-Auth-green.svg)
 ![PWA](https://img.shields.io/badge/PWA-Ready-purple.svg)
 ![Icons](https://img.shields.io/badge/Icons-Lucide-orange.svg)
+![Status](https://img.shields.io/badge/Status-Sunset-orange.svg)
 
 ## ✨ Features
 
